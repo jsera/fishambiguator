@@ -1,0 +1,16 @@
+<nav>
+    <ul>
+        <% if (user) { %>
+            <% if (user.hasRoleName(constants.ROLE_SUPERUSER)) { %>
+                <li><a href="/user/edit">Edit user</a></li>
+            <% } %>
+            <% if (user.hasRoleName(constants.ROLE_EDITOR)) { %>
+                <li><a href="/fish/add">Add fish</a></li>
+                <li><a href="/fish/pair">Add fish pair</a></li>
+            <% } %>
+            <li><a href="/logout">Logout</a></li>
+        <% } else { %>
+            <li><a href="/auth/facebook">Login with Facebook</a></li>
+        <% } %>
+    </ul>
+</nav>

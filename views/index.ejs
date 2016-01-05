@@ -1,0 +1,10 @@
+<h1>Look, a thing!</h1>
+
+<% if (user) { %>
+    <div>
+        <%= JSON.stringify(user); %>
+    </div>
+    <div>
+        Has role superuser: <%= user.hasRoleName(constants.ROLE_SUPERUSER) ? "is user!" : "ain't user!"; %>
+    </div>
+<% } %>
