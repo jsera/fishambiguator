@@ -8,6 +8,7 @@ describe("Fish scientific name tests", function() {
 	var testGenus = null;
 	var testGenusName = "Fishy";
 	var testSpeciesName = "Fishy"
+	var testScientificName = testGenusName+" "+testSpeciesName;
 
 	before(function(done) {
 		db.fish.create({}).then(function(fish) {
@@ -32,12 +33,23 @@ describe("Fish scientific name tests", function() {
 	});
 
 	it("Should set and get scientific names", function(done) {
-		var scientificName = "Fishy Fishy";
-		testFish.setScientificName(scientificName, function(fish) {
+		testFish.setScientificName(testScientificName, function(fish) {
 			testFish.getScientificName(function(name) {
-				expect(name).to.equal(scientificName);
+				expect(name).to.equal(testScientificName);
 				done();
 			});
+		});
+	});
+
+	it ("Should get scientific name synchronously when genus is eagerly loaded", function(done) {
+		db.fish.find({
+			where: {
+				id: testFish.id
+			},
+			include: [db.genus]
+		}).then(function(fish) {
+			expect(fish.getScientificName()).to.equal(testScientificName);
+			done();
 		});
 	});
 
