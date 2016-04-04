@@ -49,11 +49,19 @@ module.exports = function(sequelize, DataTypes) {
         }
       },
       getScientificName: function(callback) {
+        var scope = this;
+        if (callback && typeof(callback) == "function") {
+          this.getGenus().then(function(genus) {
+            callback(genus.name+" "+scope.species);
+          });
+        } else {
+          // Better hope you eagerly loaded the genus
           if (this.genus) {
             return this.genus.name+" "+this.species;
           } else {
             throw new Error("Fish model requires you to eagerly load genus, or provide a callback when you want to call getScientificName");
           }
+        }
       }
     }
   });

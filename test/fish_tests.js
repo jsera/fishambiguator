@@ -34,13 +34,8 @@ describe("Fish scientific name tests", function() {
 	it("Should set and get scientific names", function(done) {
 		var scientificName = "Fishy Fishy";
 		testFish.setScientificName(scientificName, function(fish) {
-			var nameFish = db.fish.find({
-				where: {
-					id: testFish.id
-				},
-				include: [db.genus]
-			}).then(function(fish){
-				expect(fish.getScientificName()).to.equal(scientificName);
+			testFish.getScientificName(function(name) {
+				expect(name).to.equal(scientificName);
 				done();
 			});
 		});
