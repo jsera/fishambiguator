@@ -3,12 +3,13 @@ var expect = require("chai").expect;
 var request = require("supertest");
 var db = require("../models/");
 
-describe("Fish scientific name tests", function() {
+describe("Fish name tests", function() {
 	var testFish = null;
 	var testGenus = null;
 	var testGenusName = "Fishy";
 	var testSpeciesName = "Fishy"
 	var testScientificName = testGenusName+" "+testSpeciesName;
+	var testCommonNames = ["Spiny Lumpsucker", "Tiny cute fish"];
 
 	before(function(done) {
 		db.fish.create({}).then(function(fish) {
@@ -41,7 +42,7 @@ describe("Fish scientific name tests", function() {
 		});
 	});
 
-	it ("Should get scientific name synchronously when genus is eagerly loaded", function(done) {
+	it("Should get scientific name synchronously when genus is eagerly loaded", function(done) {
 		db.fish.find({
 			where: {
 				id: testFish.id
@@ -49,6 +50,24 @@ describe("Fish scientific name tests", function() {
 			include: [db.genus]
 		}).then(function(fish) {
 			expect(fish.getScientificName()).to.equal(testScientificName);
+			done();
+		});
+	});
+
+	it("Should be able to set common names as a comma-delimited string", function(done) {
+		testFish.commonnames = testCommonNames.join(",");
+		testFish.save().then(function() {
+			done();
+		});
+	});
+
+	it("Should be able to read common names as a comma-delimited string", function(done) {
+		db.fish.find({
+			where: {
+				id: testFish.id
+			}
+		}).then(function(fish) {
+			expect(fish.commonnames).to.equal(testCommonNames.join(","));
 			done();
 		});
 	});

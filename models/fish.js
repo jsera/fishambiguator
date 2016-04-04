@@ -1,51 +1,56 @@
 'use strict';
 var db = require("./");
+var testScientificName = function(name) {
+  if (name.split) {
+    var parts = name.split(" ");
+    return parts.length == 2;
+  } else {
+    return false;
+  }
+}
 module.exports = function(sequelize, DataTypes) {
   var fish = sequelize.define('fish', {
     species: DataTypes.STRING,
-    genusId: DataTypes.INTEGER
+    genusId: DataTypes.INTEGER,
+    commonnames: DataTypes.STRING
   }, {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
         models.fish.hasMany(models.fishpair);
-        models.fish.hasMany(models.commonname);
         models.fish.hasMany(models.fishpic);
         models.fish.belongsTo(models.genus, {foreignKey: "genusId"});
-      }
+      },
+      testScientificName: testScientificName
     },
     instanceMethods: {
       setScientificName: function(name, callback, errCallback) {
         // currently, just genus and species
         // split name to get genus and species
         var scope = this;
-        if (name.toLowerCase) {
+        if (testScientificName(name)) {
           var parts = name.split(" ");
-          if (parts.length == 2) {
-            // set species name directly on fish
-            this.species = parts[1];
-            // findOrCreate on genus name
-            var Genus = sequelize.import("./genus");
-            Genus.findOrCreate({
-              where: {
-                name: parts[0]
+          // set species name directly on fish
+          this.species = parts[1];
+          // findOrCreate on genus name
+          var Genus = sequelize.import("./genus");
+          Genus.findOrCreate({
+            where: {
+              name: parts[0]
+            }
+          }).spread(function(genus, created) {
+            if (genus) {
+              scope.setGenus(genus.id);
+              scope.save();
+              if (callback) {
+                callback(scope);
               }
-            }).spread(function(genus, created) {
-              if (genus) {
-                scope.setGenus(genus.id);
-                scope.save();
-                if (callback) {
-                  callback(scope);
-                }
-              } else {
-                errCallback("Problem saving genus!");
-              }
-            });
-          } else {
-            errCallback("This is not a proper scientific name: "+name);
-          }
+            } else {
+              errCallback("Problem saving genus!");
+            }
+          });
         } else {
-          errCallback("Tried to set scientific name to something that's not a string!");
+          throw new Error("This is not a proper scientific name: "+name);
         }
       },
       getScientificName: function(callback) {
