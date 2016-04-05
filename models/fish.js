@@ -60,7 +60,7 @@ module.exports = function(sequelize, DataTypes) {
         // split name to get genus and species
         var scope = this;
         if (testScientificName(name)) {
-          var promiseHolder = promiseLib.getPromiseHolder;
+          var promiseHolder = promiseLib.getPromiseHolder();
           var parts = name.split(" ");
           // set species name directly on fish
           this.species = parts[1];

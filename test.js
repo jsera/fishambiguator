@@ -1,8 +1,13 @@
-function test() {
-	aArgs = Array.prototype.slice.apply(arguments);
-	aArgs.forEach(function(item) {
-		console.log(item);
-	});
+function returnClosure() {
+	var source = "function";
+
+	return function() {
+		console.log("I am from "+source);
+	}
 }
 
-test("foo", "bar", "baz");
+var otherScope = {
+	source: "object"
+};
+
+returnClosure().apply(otherScope);

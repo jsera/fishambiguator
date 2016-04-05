@@ -5,12 +5,12 @@ module.exports = {
 			errorF: null,
 			callback: function() {
 				if (this.callbackF) {
-					this.callbackF().call(this, Array.prototype.slice.apply(arguments));
+					return this.callbackF.apply(null, Array.prototype.slice.apply(arguments));
 				}
 			},
 			error: function() {
 				if (this.errorF) {
-					this.errorF.call(this, Array.prototype.slice.apply(arguments));
+					return this.errorF.apply(this, Array.prototype.slice.apply(arguments));
 				}
 			}
 		};
