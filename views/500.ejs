@@ -1,0 +1,3 @@
+<h1>500 - Whut?</h1>
+<% images = ["lolwhut.jpeg", "whut_ST.jpeg", "whut-ian.jpg"] %>
+<img src="<%= helpers.staticImagePath("/img/"+images[Math.floor(Math.random() * images.length)]) %>" />

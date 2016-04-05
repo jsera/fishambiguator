@@ -30,6 +30,10 @@ passport.use(facebookStrategy);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// View helpers
+var helpers = require("./helpers/");
+app.use(helpers());
+
 // Stick the user in locals
 app.use(function(req, res, next) {
     res.locals.user = req.user;

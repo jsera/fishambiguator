@@ -17,18 +17,27 @@ router.use(function(req, res, next) {
 });
 
 router.get("/add", function(req, res) {
-	res.render("fish/add", {fish:{}});
+	res.render("fish/add", {fish:{}, action:"/fish/"});
 });
 
 router.post("/", function(req, res) {
 	// redirect to edit fish
 	db.fish.newFish(req.body, function(fish, err) {
         if (fish) {
-            res.redirect("/fish/"+fish.id);
+            res.redirect("/fish/edit/"+fish.id);
         } else {
             res.send(err);
         }
     });
+});
+
+router.get("/edit/:id", function(req, res) {
+    var id = parseInt(req.params.id);
+    if (!isNaN(id)) {
+
+    } else {
+        res.render("500");
+    }
 });
 
 module.exports = router;
