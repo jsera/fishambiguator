@@ -38,11 +38,15 @@ describe("Fish name tests", function() {
 	});
 
 	it("Should set and get scientific names", function(done) {
-		testFish.setScientificName(testScientificName, function(fish) {
-			testFish.getScientificName(function(name) {
+		testFish.setScientificName(testScientificName)
+		.then(function(fish) {
+			testFish.getScientificName().then(function(name) {
 				expect(name).to.equal(testScientificName);
 				done();
 			});
+		})
+		.error(function(error) {
+			throw new Error(error);
 		});
 	});
 

@@ -1,5 +1,6 @@
 'use strict';
 var db = require("./");
+var promiseLib = require("../promiseLib/");
 
 var testScientificName = function(name) {
   if (name.split) {
@@ -40,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
             commonnames: params.commonnames
           }).then(function(fish) {
             if (fish) {
-              fish.setScientificName(params.scientificName, function(fish) {
+              fish.setScientificName(params.scientificName).then(function(fish) {
                 callback(fish);
               });
             } else {
@@ -54,11 +55,12 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     instanceMethods: {
-      setScientificName: function(name, callback, errCallback) {
+      setScientificName: function(name) {
         // currently, just genus and species
         // split name to get genus and species
         var scope = this;
         if (testScientificName(name)) {
+          var promiseHolder = promiseLib.getPromiseHolder;
           var parts = name.split(" ");
           // set species name directly on fish
           this.species = parts[1];
@@ -72,30 +74,30 @@ module.exports = function(sequelize, DataTypes) {
             if (genus) {
               scope.setGenus(genus.id);
               scope.save();
-              if (callback) {
-                callback(scope);
+              if (promiseHolder.callback) {
+                promiseHolder.callback(scope);
               }
             } else {
-              errCallback("Problem saving genus!");
+              promiseHolder.error("Problem saving genus!");
             }
           });
+          return promiseLib.getPromise(promiseHolder);
         } else {
           throw new Error("This is not a proper scientific name: "+name);
         }
       },
-      getScientificName: function(callback) {
+      // returns scientific name if genus is eagerly loaded, or a promise if not.
+      getScientificName: function() {
         var scope = this;
-        if (callback && typeof(callback) == "function") {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (!this.genus) {
           this.getGenus().then(function(genus) {
-            callback(genus.name+" "+scope.species);
+            promiseHolder.callback(genus.name+" "+scope.species);
           });
+          return promiseLib.getPromise(promiseHolder);
         } else {
           // Better hope you eagerly loaded the genus
-          if (this.genus) {
-            return this.genus.name+" "+this.species;
-          } else {
-            throw new Error("Fish model requires you to eagerly load genus, or provide a callback when you want to call getScientificName");
-          }
+          return this.genus.name+" "+this.species;
         }
       }
     },
