@@ -1,12 +1,5 @@
 <h1>FISH ADD!!!!</h1>
-<form method="POST" action="<%= action %>">
-	<div>
-		<label for="common-names">Common Names:</label>
-		<input type="text" id="common-names" name="commonnames" value="<%= fish.commonnames %>" />
-	</div>
-	<div>
-		<label for="scientific-name">Scientific Name</label>
-		<input type="text" id="scientific-name" name="scientificName" value="<%= fish.scientificName %>" />
-	</div>
+<form method="POST" action="/fish/">
+	<% include form_name %>
 	<input type="submit" class="btn btn-primary" />
 </form>

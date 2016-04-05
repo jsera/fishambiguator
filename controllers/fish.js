@@ -17,7 +17,7 @@ router.use(function(req, res, next) {
 });
 
 router.get("/add", function(req, res) {
-	res.render("fish/add", {fish:{}, action:"/fish/"});
+	res.render("fish/add", {fish:{}});
 });
 
 router.post("/", function(req, res) {
@@ -34,7 +34,20 @@ router.post("/", function(req, res) {
 router.get("/edit/:id", function(req, res) {
     var id = parseInt(req.params.id);
     if (!isNaN(id)) {
-
+        db.fish.find({
+            where: {
+                id: id
+            },
+            include: [db.genus]
+        }).then(function(fish) {
+            res.render("fish/edit", {
+                fish:{
+                    scientificName: fish.getScientificName(), 
+                    commonnames: fish.commonnames
+                },
+                action: "/fish/edit/"+id
+            });
+        });
     } else {
         res.render("500");
     }
