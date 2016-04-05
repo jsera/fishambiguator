@@ -33,7 +33,25 @@ module.exports = function(sequelize, DataTypes) {
         models.fish.hasMany(models.fishpic);
         models.fish.belongsTo(models.genus, {foreignKey: "genusId"});
       },
-      testScientificName: testScientificName
+      testScientificName: testScientificName,
+      newFish: function(params, callback) {
+        if (params.commonnames && params.scientificName) {
+          this.create({
+            commonnames: params.commonnames
+          }).then(function(fish) {
+            if (fish) {
+              fish.setScientificName(params.scientificName, function(fish) {
+                callback(fish);
+              });
+            } else {
+              callback(null, "Fish wasn't created");
+            }
+          });
+        } else {
+          // params no formatted right
+          callback(null, "Params not formatted right");
+        }
+      }
     },
     instanceMethods: {
       setScientificName: function(name, callback, errCallback) {

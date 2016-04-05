@@ -2,6 +2,7 @@ var should = require("chai").should();
 var expect = require("chai").expect;
 var request = require("supertest");
 var db = require("../models/");
+var assert = require("assert");
 
 describe("Fish name tests", function() {
 	var testFish = null;
@@ -10,6 +11,9 @@ describe("Fish name tests", function() {
 	var testSpeciesName = "Fishy"
 	var testScientificName = testGenusName+" "+testSpeciesName;
 	var testCommonNames = ["Spiny Lumpsucker", "Tiny cute fish"];
+	var lowercaseCommonNames = testCommonNames.map(function(name) {
+		return name.trim().toLowerCase();
+	});
 
 	before(function(done) {
 		db.fish.create({}).then(function(fish) {
@@ -67,7 +71,7 @@ describe("Fish name tests", function() {
 				id: testFish.id
 			}
 		}).then(function(fish) {
-			expect(fish.commonnames).to.equal(testCommonNames.join(","));
+			expect(fish.commonnames).to.equal(lowercaseCommonNames.join(","));
 			done();
 		});
 	});
@@ -75,7 +79,7 @@ describe("Fish name tests", function() {
 	it("Should trim common names", function(done) {
 		var goofyNames = ["   \n\nSpiny Lumpsucker", "A Fish\n\n\n   \t  \n\n", "\t\t\t\t\t\t\n\n    something else\n  \n  \t"];
 		var nonGoofyNames = goofyNames.map(function(name) {
-			return name.trim();
+			return name.trim().toLowerCase();
 		});
 		testFish.commonnames = goofyNames.join(",");
 		testFish.save().then(function() {
@@ -104,4 +108,41 @@ describe("Fish name tests", function() {
 			}
 		}
 	});
+});
+
+describe("Fish creation and update tests", function() {
+	var testFish = null;
+	var testGenus = null;
+
+	it("Should be able to use newFish on the model class to create a new fish", function(done) {
+		db.fish.newFish({
+			commonnames: "foo, bar",
+			scientificName: "fooius barrius"
+		}, function(fish, err) {
+			assert(fish != null, "New fish is not null");
+			testFish = fish;
+			assert(fish.commonnames == "foo,bar", "New fish has the proper common names");
+			assert(fish.species = "barrius", "New fish has the right species name");
+			fish.getGenus().then(function(genus) {
+				assert(genus.name == "fooius", "New fish has the right genus");
+				testGenus = genus;
+				done();
+			});
+		});
+	});
+
+	after(function(done) {
+		if (testFish) {
+			var destroyFish = function() {
+				testFish.destroy().then(function() {
+					done();
+				});
+			};
+			if (testGenus) {
+				testGenus.destroy().then(destroyFish);
+			} else {
+				destroyFish();
+			}
+		}
+	})
 });

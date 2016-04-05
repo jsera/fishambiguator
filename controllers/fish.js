@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var constants = require("../constants");
+var db = require("../models/");
 
 // Editors only!
 router.use(function(req, res, next) {
@@ -21,7 +22,13 @@ router.get("/add", function(req, res) {
 
 router.post("/", function(req, res) {
 	// redirect to edit fish
-	res.redirect("/");
+	db.fish.newFish(req.body, function(fish, err) {
+        if (fish) {
+            res.redirect("/fish/"+fish.id);
+        } else {
+            res.send(err);
+        }
+    });
 });
 
 module.exports = router;
