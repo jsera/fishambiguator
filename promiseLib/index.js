@@ -1,18 +1,28 @@
 module.exports = {
 	getPromiseHolder: function() {
 		return {
-			callback: null,
-			error: null
+			callbackF: null,
+			errorF: null,
+			callback: function() {
+				if (this.callbackF) {
+					this.callbackF().call(this, Array.prototype.slice.apply(arguments));
+				}
+			},
+			error: function() {
+				if (this.errorF) {
+					this.errorF.call(this, Array.prototype.slice.apply(arguments));
+				}
+			}
 		};
 	},
 	getPromise: function(holder) {
 		return {
 			then: function(callback) {
-				holder.callback = callback;
+				holder.callbackF = callback;
 				return this;
 			},
 			error: function(callback) {
-				holder.error = callback;
+				holder.errorF = callback;
 				return this;
 			}
 		};
