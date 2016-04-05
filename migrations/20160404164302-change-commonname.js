@@ -1,5 +1,8 @@
 'use strict';
-
+/**
+This just changes the way we handle common names. Instead of a table, it's now just a comma-delimited string, because there's no real
+reason to use a table.
+*/
 module.exports = {
   up: function (queryInterface, Sequelize) {
     /*
