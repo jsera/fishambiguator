@@ -32,7 +32,9 @@ app.use(passport.session());
 
 // View helpers
 var helpers = require("./helpers/");
-app.use(helpers());
+app.use(helpers({
+    staticImagePath: process.env.STATIC_SERVER
+}));
 
 // Stick the user in locals
 app.use(function(req, res, next) {

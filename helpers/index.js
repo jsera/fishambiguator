@@ -1,7 +1,10 @@
 var fs        = require('fs');
 var path      = require('path');
 var basename  = path.basename(module.filename);
-var helpers = {};
+var helpers = [];
+var scope = {
+	helperScope: {}
+};
 
 fs
   .readdirSync(__dirname)
@@ -10,12 +13,27 @@ fs
   })
   .forEach(function(file) {
     var helper = require(path.join(__dirname, file));
-    helpers[file.substr(0, file.length-3)] = helper;
+    helpers.push({
+    	name: file.substr(0, file.length-3),
+    	helper: helper
+    });
   });
 
-module.exports = function() {
+module.exports = function(config) {
+	if (config && typeof(config) == "object") {
+		scope.helperScope = config;
+	}
 	return function(req, res, next) {
-		res.locals.helpers = helpers;
+		var finalHelpers = {}
+		helpers.forEach(function(container) {
+			finalHelpers[container.name] = function() {
+				return container.helper.apply(
+					scope.helperScope, 
+					Array.prototype.slice.apply(arguments)
+				);
+			}
+		});
+		res.locals.helpers = finalHelpers;
 		next();
 	}
 };
