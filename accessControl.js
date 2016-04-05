@@ -11,5 +11,8 @@ module.exports = {
 		        error(req, res);
 		    }
 		}
+	},
+	hasRoleSynchronous: function(req, roleName) {
+		return req.user && req.user.hasRoleName(roleName);
 	}
 };

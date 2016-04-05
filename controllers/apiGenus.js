@@ -3,9 +3,17 @@ var router = express.Router();
 var db = require("../models/");
 
 router.get("/", function(req, res) {
-	db.genus.findAll({
+	var predicate = {
 		order: "name"
-	}).then(function(genera) {
+	};
+	if (req.query.name) {
+		predicate.where = {
+			name: {
+				$like: "%"+req.query.name+"%"
+			}
+		};
+	}
+	db.genus.findAll(predicate).then(function(genera) {
 		var result = genera.map(function(genus) {
 			return genus.get();
 		});
