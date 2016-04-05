@@ -61,6 +61,7 @@ app.get("/logout", function(req, res) {
 app.use("/auth", require("./controllers/auth"));
 app.use("/fish", require("./controllers/fish"));
 app.use("/api/fish", require("./controllers/apiFish"));
+app.use("/api/genus", require("./controllers/apiGenus"));
 
 // custom 404
 app.use(function(req, res, next) {
