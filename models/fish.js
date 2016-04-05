@@ -1,5 +1,6 @@
 'use strict';
 var db = require("./");
+
 var testScientificName = function(name) {
   if (name.split) {
     var parts = name.split(" ");
@@ -7,7 +8,18 @@ var testScientificName = function(name) {
   } else {
     return false;
   }
-}
+};
+
+var trimCommonNames = function(fish) {
+  if (fish.commonnames) {
+    var parts = fish.commonnames.split(",");
+    parts = parts.map(function(name) {
+      return name.trim();
+    });
+    fish.commonnames = parts.join(",");
+  }
+};
+
 module.exports = function(sequelize, DataTypes) {
   var fish = sequelize.define('fish', {
     species: DataTypes.STRING,
@@ -67,6 +79,14 @@ module.exports = function(sequelize, DataTypes) {
             throw new Error("Fish model requires you to eagerly load genus, or provide a callback when you want to call getScientificName");
           }
         }
+      }
+    },
+    hooks: {
+      beforeCreate:function(fish, options) {
+        trimCommonNames(fish);
+      },
+      beforeUpdate: function(fish, options) {
+        trimCommonNames(fish);
       }
     }
   });

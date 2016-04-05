@@ -72,6 +72,24 @@ describe("Fish name tests", function() {
 		});
 	});
 
+	it("Should trim common names", function(done) {
+		var goofyNames = ["   \n\nSpiny Lumpsucker", "A Fish\n\n\n   \t  \n\n", "\t\t\t\t\t\t\n\n    something else\n  \n  \t"];
+		var nonGoofyNames = goofyNames.map(function(name) {
+			return name.trim();
+		});
+		testFish.commonnames = goofyNames.join(",");
+		testFish.save().then(function() {
+			db.fish.find({
+				where: {
+					id: testFish.id
+				}
+			}).then(function(fish) {
+				expect(fish.commonnames).to.equal(nonGoofyNames.join(","));
+				done();
+			});
+		});
+	});
+
 	after(function(done) {
 		if (testFish) {
 			var destroyFish = function() {
