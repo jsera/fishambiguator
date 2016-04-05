@@ -14,7 +14,7 @@ var trimCommonNames = function(fish) {
   if (fish.commonnames) {
     var parts = fish.commonnames.split(",");
     parts = parts.map(function(name) {
-      return name.trim();
+      return name.trim().toLowerCase();
     });
     fish.commonnames = parts.join(",");
   }
