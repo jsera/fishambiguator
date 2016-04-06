@@ -2,9 +2,7 @@ var fs        = require('fs');
 var path      = require('path');
 var basename  = path.basename(module.filename);
 var helpers = [];
-var scope = {
-	helperScope: {}
-};
+var helperScope = {};
 
 fs
   .readdirSync(__dirname)
@@ -21,14 +19,14 @@ fs
 
 module.exports = function(config) {
 	if (config && typeof(config) == "object") {
-		scope.helperScope = config;
+		helperScope = config;
 	}
 	return function(req, res, next) {
 		var finalHelpers = {}
 		helpers.forEach(function(container) {
 			finalHelpers[container.name] = function() {
 				return container.helper.apply(
-					scope.helperScope, 
+					helperScope, 
 					Array.prototype.slice.apply(arguments)
 				);
 			}
