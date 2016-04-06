@@ -19,6 +19,10 @@ router.get("/", function(req, res) {
                             error: "No fish for that name found"
                         });
                     }
+                }).error(function(error) {
+                    res.send({
+                        error: error
+                    });
                 });
         } else {
             db.fish.findByCommonName(req.query.commonname).then(function(fish) {
@@ -34,6 +38,10 @@ router.get("/", function(req, res) {
                         error: "No fish for that name found"
                     });
                 }
+            }).error(function(error) {
+                res.send({
+                    error: error
+                });
             });
         }  
     } else {
