@@ -85,7 +85,7 @@ module.exports = function(sequelize, DataTypes) {
                 fish.commonnames = params.commonnames;
               }
               if (params.scientificname && testScientificName(params.scientificname)) {
-                var parts = params.scientificname.toLowerCase().split(" ");
+                var parts = params.scientificname.split(" ");
                 Genus.findOrCreate({
                   where: {
                     name: parts[0]
@@ -116,7 +116,6 @@ module.exports = function(sequelize, DataTypes) {
         var promiseHolder = promiseLib.getPromiseHolder();
         var scope = this;
         if (name && testScientificName(name)) {
-          name = name.toLowerCase();
           var nameParts = name.split(" ");
           var Genus = sequelize.import("./genus");
           Genus.find({
@@ -147,7 +146,6 @@ module.exports = function(sequelize, DataTypes) {
       findByCommonName: function(name) {
         var promiseHolder = promiseLib.getPromiseHolder();
         if (name && name.toLowerCase) {
-          name = name.toLowerCase();
           var Genus = sequelize.import("./genus");
           this.findAll({
             where: {
@@ -172,9 +170,7 @@ module.exports = function(sequelize, DataTypes) {
         var scope = this;
         if (testScientificName(name)) {
           var promiseHolder = promiseLib.getPromiseHolder();
-          var parts = name.split(" ").map(function(part) {
-            return part.toLowerCase();
-          });
+          var parts = name.split(" ");
           // set species name directly on fish
           this.species = parts[1];
           // findOrCreate on genus name
