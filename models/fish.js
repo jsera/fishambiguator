@@ -21,6 +21,13 @@ var trimCommonNames = function(fish) {
   }
 };
 
+var beforeCreateOrUpdate = function(fish, options) {
+  trimCommonNames(fish);
+  if (fish.species) {
+    fish.species = fish.species.toLowerCase();
+  }
+};
+
 module.exports = function(sequelize, DataTypes) {
   var fish = sequelize.define('fish', {
     species: DataTypes.STRING,
@@ -35,6 +42,11 @@ module.exports = function(sequelize, DataTypes) {
         models.fish.belongsTo(models.genus, {foreignKey: "genusId"});
       },
       testScientificName: testScientificName,
+      /*
+        params:
+          string commonnames - a comma delimited list of common names
+          string scientificname - the scientific name, (genus species) ex: "ophidon elongatus"
+      */
       newFish: function(params, callback) {
         if (params.commonnames && params.scientificName) {
           this.create({
@@ -52,6 +64,53 @@ module.exports = function(sequelize, DataTypes) {
           // params no formatted right
           callback(null, "Params not formatted right");
         }
+      },
+      /*
+        params:
+          string commonnames - a comma delimited list of common names
+          string scientificname - the scientific name, (genus species) ex: "ophidon elongatus"
+      */
+      updateFish: function(id, params) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (params.commonnames || params.scientificname) {
+          var Genus = sequelize.import("./genus");
+          this.findOne({
+            where: {
+              id: id
+            },
+            include: [Genus]
+          }).then(function(fish) {
+            if (fish) {
+              if (params.commonnames) {
+                fish.commonnames = params.commonnames;
+              }
+              if (params.scientificname && testScientificName(params.scientificname)) {
+                var parts = params.scientificname.toLowerCase().split(" ");
+                Genus.findOrCreate({
+                  where: {
+                    name: parts[0]
+                  }
+                }).spread(function(genus, created) {
+                  console.log("********* fish: ", fish.get());
+                  if (genus && fish.genusId != genus.id) {
+                    fish.genus = genus;
+                  }
+                  fish.species = parts[1];
+                  fish.save().then(function() {
+                    promiseHolder.callback(fish);
+                  });
+                });
+              } else {
+                fish.save().then(function() {
+                  promiseHolder.callback(fish);
+                });
+              }
+            }
+          });
+        } else {
+          promiseHolder.error("No data to update with!");
+        }
+        return promiseLib.getPromise(promiseHolder);
       },
       findByScientificName: function(name) {
         var promiseHolder = promiseLib.getPromiseHolder();
@@ -156,11 +215,24 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     hooks: {
-      beforeCreate:function(fish, options) {
-        trimCommonNames(fish);
-      },
-      beforeUpdate: function(fish, options) {
-        trimCommonNames(fish);
+      beforeCreate: beforeCreateOrUpdate,
+      beforeUpdate: beforeCreateOrUpdate,
+      beforeFind: function(opts, fn) {
+        if (opts.where) {
+          if (opts.where.species) {
+            opts.where.species = opts.where.species.toLowerCase();
+          }
+          if (opts.where.commonnames) {
+            if (opts.where.commonnames.toLowerCase) {
+              opts.where.commonnames = opts.where.commonnames.toLowerCase();
+            } else {
+              if (opts.where.commonnames.$like) {
+                opts.where.commonnames.$like = opts.where.commonnames.$like.toLowerCase();
+              }
+            }
+          }
+        }
+        return fn(null, opts);
       }
     }
   });

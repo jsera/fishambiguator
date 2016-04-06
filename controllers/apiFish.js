@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var db = require("../models/");
+var accessControl = require("../accessControl");
+var constants = require("../constants");
 
 router.get("/", function(req, res) {
     if (req.query.scientificname || req.query.commonname) {
@@ -46,6 +48,38 @@ router.get("/", function(req, res) {
         }  
     } else {
         res.send({error:"Must specify a query! We have a lot of fish."});
+    }
+});
+
+router.get("/:id", function(req, res) {
+    var id = parseInt(req.params.id);
+    if (!isNaN(id)) {
+        db.fish.findOne({
+            where: {
+                id: id
+            },
+            include: [db.genus]
+        }).then(function(fish) {
+            if (fish) {
+                res.send(fish.get());
+            } else {
+                res.send({
+                    error: "No fish by that ID"
+                });
+            }
+        });
+    } else {
+        res.send({
+            error: "That's not a proper ID"
+        });
+    }
+});
+
+router.put("/:id", function(req, res) {
+    if (accessControl.hasRoleSynchronous(req, constants.ROLE_EDITOR)) {
+        
+    } else {
+        res.status(403).send("You need to be logged in to do that!");
     }
 });
 

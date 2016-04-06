@@ -124,6 +124,38 @@ describe("Fish name tests", function() {
 		});
 	});
 
+	it("Should be able to update a fish's common names from an object", function(done) {
+		var originalCommon = testFish.commonnames;
+		db.fish.updateFish(testFish.id, {
+			commonnames: "test,names"
+		}).then(function(fish) {
+			assert(fish != null, "Fish should not be null");
+			assert(fish.commonnames == "test,names");
+			// reset!
+			fish.commonnames = originalCommon;
+			fish.save().then(function() {
+				done();
+			});
+		});
+	});
+
+	it("Should be able to update the species name", function(done) {
+		var originalSpecies = testSpeciesName;
+		console.log("********** testFish: ", testFish.get());
+		db.fish.updateFish(testFish.id, {
+			scientificname: testGenusName+" splishy"
+		}).then(function(fish) {
+			assert(fish != null, "Fish shouldn't be null");
+			assert(fish.genusId === testGenus.id, "Genus should remain the same");
+			assert(fish.getScientificName() == testGenusName.toLowerCase()+" splishy");
+			// reset!
+			fish.species = originalSpecies;
+			fish.save().then(function() {
+				done();
+			});
+		});
+	});
+
 	after(function(done) {
 		if (testFish) {
 			var destroyFish = function() {
