@@ -15,7 +15,6 @@ router.get("/add", function(req, res) {
 
 router.post("/", function(req, res) {
 	// redirect to edit fish
-    console.log("******** req.body in new fish: ", req.body);
 	db.fish.newFish(req.body, function(fish, err) {
         if (fish) {
             res.redirect("/fish/edit/"+fish.id);
