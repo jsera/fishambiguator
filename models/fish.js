@@ -52,6 +52,58 @@ module.exports = function(sequelize, DataTypes) {
           // params no formatted right
           callback(null, "Params not formatted right");
         }
+      },
+      findByScientificName: function(name) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        var scope = this;
+        if (name && testScientificName(name)) {
+          name = name.toLowerCase();
+          var nameParts = name.split(" ");
+          var Genus = sequelize.import("./genus");
+          Genus.find({
+              where: {
+                  name: nameParts[0]
+              }
+          }).then(function(genus) {
+              if (genus) {
+                  scope.findAll({
+                      where: {
+                          species: nameParts[1],
+                          genusId: genus.id
+                      },
+                      include: [Genus]
+                  }).then(function(fish) {
+                      promiseHolder.callback(fish);
+                  });
+              } else {
+                  promiseHolder.callback(fish);
+              }
+          });
+        } else {
+          promiseHolder.error("Not a proper scientific name!");
+        }
+        return promiseLib.getPromise(promiseHolder);
+      },
+      // Does a like, so you could search for "Ling" and get "Ling Cod"
+      findByCommonName: function(name) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (name && name.toLowerCase) {
+          name = name.toLowerCase();
+          var Genus = sequelize.import("./genus");
+          this.findAll({
+            where: {
+                commonnames: {
+                    $like: "%"+name+"%"
+                }
+            },
+            include: [Genus]
+          }).then(function(fish) {
+              promiseHolder.callback(fish);
+          });
+        } else {
+          promiseHolder.error("Not a valid common name");
+        }
+        return promiseLib.getPromise(promiseHolder);
       }
     },
     instanceMethods: {

@@ -93,8 +93,34 @@ describe("Fish name tests", function() {
 				}
 			}).then(function(fish) {
 				expect(fish.commonnames).to.equal(nonGoofyNames.join(","));
-				done();
+				// undo our change
+				fish.commonnames = testCommonNames.join(",");
+				fish.save().then(function() {
+					done();
+				});
 			});
+		});
+	});
+
+	it("Should be able to find by scientific name", function(done) {
+		db.fish.findByScientificName(testScientificName).then(function(fish) {
+			assert(fish != null, "Should get results for name: "+testScientificName);
+			assert(fish.length == 1, "Should get one result");
+			var result = fish[0].get();
+			assert(result.commonnames == lowercaseCommonNames.join(","), "Common names should be what we expect");
+			//
+			done();
+		});
+	});
+
+	it("Should be able to find by common name", function(done) {
+		db.fish.findByCommonName(testCommonNames[0]).then(function(fish) {
+			assert(fish != null, "Should get results for name: "+testScientificName);
+			assert(fish.length == 1, "Should get one result");
+			var result = fish[0].get();
+			assert(result.commonnames == lowercaseCommonNames.join(","), "Common names should be what we expect");
+			//
+			done();
 		});
 	});
 
