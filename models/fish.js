@@ -61,7 +61,9 @@ module.exports = function(sequelize, DataTypes) {
         var scope = this;
         if (testScientificName(name)) {
           var promiseHolder = promiseLib.getPromiseHolder();
-          var parts = name.split(" ");
+          var parts = name.split(" ").map(function(part) {
+            return part.toLowerCase();
+          });
           // set species name directly on fish
           this.species = parts[1];
           // findOrCreate on genus name

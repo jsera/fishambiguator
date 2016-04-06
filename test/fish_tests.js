@@ -41,7 +41,7 @@ describe("Fish name tests", function() {
 		testFish.setScientificName(testScientificName)
 		.then(function(fish) {
 			testFish.getScientificName().then(function(name) {
-				expect(name).to.equal(testScientificName);
+				expect(name).to.equal(testScientificName.toLowerCase());
 				done();
 			});
 		})
@@ -57,7 +57,7 @@ describe("Fish name tests", function() {
 			},
 			include: [db.genus]
 		}).then(function(fish) {
-			expect(fish.getScientificName()).to.equal(testScientificName);
+			expect(fish.getScientificName()).to.equal(testScientificName.toLowerCase());
 			done();
 		});
 	});
