@@ -181,6 +181,11 @@ describe("Fish name tests", function() {
 		});
 	});
 
+	it("Should be able to change common and scientific names simultaneously", function(done) {
+		// TODO: test changing common and scientific names at the same time
+		done();
+	});
+
 	after(function(done) {
 		if (testFish) {
 			var destroyFish = function() {

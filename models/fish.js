@@ -72,6 +72,7 @@ module.exports = function(sequelize, DataTypes) {
       */
       updateFish: function(id, params) {
         var promiseHolder = promiseLib.getPromiseHolder();
+        var scope = this;
         if (params.commonnames || params.scientificname) {
           var Genus = sequelize.import("./genus");
           this.findOne({
@@ -81,28 +82,41 @@ module.exports = function(sequelize, DataTypes) {
             include: [Genus]
           }).then(function(fish) {
             if (fish) {
+              var finalFishLoad = function() {
+                scope.findOne({
+                  where: {
+                    id: fish.id
+                  },
+                  include: [Genus]
+                }).then(function(finalFish) {
+                  promiseHolder.callback(finalFish);
+                });
+              };
+              // Deal with common names
               if (params.commonnames) {
                 fish.commonnames = params.commonnames;
               }
               if (params.scientificname && testScientificName(params.scientificname)) {
                 var parts = params.scientificname.split(" ");
+                var originalGenusId = fish.genus.id;
+                console.log("********** new genus: "+parts[0]);
                 Genus.findOrCreate({
                   where: {
                     name: parts[0]
                   }
                 }).spread(function(genus, created) {
-                  console.log("********* fish: ", fish.get());
-                  if (genus && fish.genusId != genus.id) {
-                    fish.genus = genus;
+                  if (genus && originalGenusId != genus.id) {
+                    console.log("********** Changing genus?");
+                    fish.genusId = genus.id;
                   }
                   fish.species = parts[1];
                   fish.save().then(function() {
-                    promiseHolder.callback(fish);
+                    finalFishLoad();
                   });
                 });
               } else {
                 fish.save().then(function() {
-                  promiseHolder.callback(fish);
+                  finalFishLoad();
                 });
               }
             }

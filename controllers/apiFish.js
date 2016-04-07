@@ -76,11 +76,20 @@ router.get("/:id", function(req, res) {
 });
 
 router.put("/:id", function(req, res) {
-    if (accessControl.hasRoleSynchronous(req, constants.ROLE_EDITOR)) {
-        
+    //if (accessControl.hasRoleSynchronous(req, constants.ROLE_EDITOR)) {
+        var id = parseInt(req.params.id);
+        if (!isNaN(id)) {
+            db.fish.updateFish(id, req.body).then(function(fish) {
+                res.send(fish.get());
+            });
+        } else {
+            res.status(500).send({error: "Not a valid ID"});
+        }
+        /*
     } else {
-        res.status(403).send("You need to be logged in to do that!");
+        res.status(403).send({error:"You need to be logged in to do that!"});
     }
+    */
 });
 
 module.exports = router;
