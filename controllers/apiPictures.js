@@ -5,8 +5,7 @@ var accessControl = require("../accessControl");
 var constants = require("../constants");
 
 router.post("/", function(req, res) {
-	//if (accessControl.hasRoleSynchronous(constants.ROLE_EDITOR)) {
-	if (true) {
+	if (accessControl.hasRoleSynchronous(constants.ROLE_EDITOR)) {
 		db.fishpic.newPic(req.body).then(function(pic) {
 			res.send(pic);
 		}).error(function(err) {
