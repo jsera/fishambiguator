@@ -156,6 +156,31 @@ describe("Fish name tests", function() {
 		});
 	});
 
+	it("Should be able to change the genus name by updating the fish", function(done) {
+		db.fish.updateFish(testFish.id, {
+			scientificname: "splishy splishy"
+		}).then(function(fish) {
+			assert(fish != null, "Fish shouldn't be null");
+			assert(fish.genus.name === "splishy", "Genus name should have changed");
+			//
+			db.genus.find({
+				where: {
+					name: "splishy"
+				}
+			}).then(function (genus) {
+				assert(genus != null, "Genus splishy should be findable");
+				// reset!
+				db.fish.updateFish(testFish.id, {
+					scientificname: testScientificName
+				}).then(function() {
+					genus.destroy().then(function() {
+						done();
+					});
+				});
+			});
+		});
+	});
+
 	after(function(done) {
 		if (testFish) {
 			var destroyFish = function() {
