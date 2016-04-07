@@ -35,6 +35,7 @@ router.get("/edit/:id", function(req, res) {
         }).then(function(fish) {
             res.render("fish/edit", {
                 fish:{
+                    id: fish.id,
                     scientificName: fish.getScientificName(), 
                     commonnames: fish.commonnames
                 },

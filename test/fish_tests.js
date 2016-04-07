@@ -18,7 +18,7 @@ describe("Fish name tests", function() {
 	before(function(done) {
 		db.fish.create({}).then(function(fish) {
 			testFish = fish;
-			db.genus.create({name:testGenusName}).then(function(genus) {
+			db.genus.findOrCreate({where:{name:testGenusName}}).spread(function(genus) {
 				testGenus = genus;
 				done();
 			});

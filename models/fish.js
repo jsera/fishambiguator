@@ -99,14 +99,12 @@ module.exports = function(sequelize, DataTypes) {
               if (params.scientificname && testScientificName(params.scientificname)) {
                 var parts = params.scientificname.split(" ");
                 var originalGenusId = fish.genus.id;
-                console.log("********** new genus: "+parts[0]);
                 Genus.findOrCreate({
                   where: {
                     name: parts[0]
                   }
                 }).spread(function(genus, created) {
                   if (genus && originalGenusId != genus.id) {
-                    console.log("********** Changing genus?");
                     fish.genusId = genus.id;
                   }
                   fish.species = parts[1];

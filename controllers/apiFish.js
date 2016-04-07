@@ -79,8 +79,12 @@ router.put("/:id", function(req, res) {
     if (accessControl.hasRoleSynchronous(req, constants.ROLE_EDITOR)) {
         var id = parseInt(req.params.id);
         if (!isNaN(id)) {
+            console.log("********** Has a body?", req.body);
             db.fish.updateFish(id, req.body).then(function(fish) {
+                console.log("******* Fish updated?");
                 res.send(fish.get());
+            }).error(function(err) {
+                res.status(500).send({error:err});
             });
         } else {
             res.status(500).send({error: "Not a valid ID"});

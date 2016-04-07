@@ -1,8 +1,20 @@
 <div>
 	<label for="common-names">Common Names:</label>
-	<input type="text" id="common-names" name="commonnames" value="<%= fish.commonnames %>" ng-model="fish.commonnames" />
+	<input 
+		type="text" 
+		id="common-names" 
+		name="commonnames" 
+		value="<%= fish.commonnames %>" 
+		ng-model="fish.commonnames" 
+		ng-init="fish.commonnames='<%= fish.commonnames %>'" />
 </div>
 <div>
 	<label for="scientific-name">Scientific Name</label>
-	<input type="text" id="scientific-name" name="scientificName" value="<%= fish.scientificName %>" ng-model="fish.scientificName" />
+	<input 
+		type="text" 
+		id="scientific-name" 
+		name="scientificName" 
+		value="<%= fish.scientificName %>" 
+		ng-model="fish.scientificname"
+		ng-init="fish.scientificname='<%= fish.scientificName %>'" />
 </div>

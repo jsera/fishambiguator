@@ -9,8 +9,17 @@ module.exports = {
 				}
 			},
 			error: function() {
+				var args = Array.prototype.slice.apply(arguments);
+				var scope = this;
 				if (this.errorF) {
-					return this.errorF.apply(this, Array.prototype.slice.apply(arguments));
+					return this.errorF.apply(this, args);
+				} else {
+					// sometimes the error will be called synchronously
+					setTimeout(function() {
+						if (scope.errorF) {
+							scope.errorF.apply(scope, args);
+						}
+					}, 0);
 				}
 			}
 		};

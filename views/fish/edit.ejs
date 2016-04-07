@@ -1,4 +1,8 @@
-<h1>FISH EDIT!!!!</h1>
-<form method="POST" action="<%= action %>">
-	<% include form_name %>
-</form>
+<div ng-controller="EditCtrl">
+	<h1>FISH EDIT!!!!</h1>
+	<form method="POST" action="<%= action %>" ng-submit="editNames($event)">
+		<% include form_name %>
+		<input type="submit" class="btn btn-primary" ng-disabled="nameDisabled" value="Edit names" />
+		<input type="hidden" ng-model="fish.fishId" ng-init="fish.id = <%= fish.id %>" />
+	</form>
+</div>

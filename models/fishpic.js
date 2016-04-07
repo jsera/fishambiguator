@@ -1,4 +1,6 @@
 'use strict';
+var promiseLib = require("../promiseLib/");
+
 module.exports = function(sequelize, DataTypes) {
   var fishpic = sequelize.define('fishpic', {
     url: DataTypes.STRING,
@@ -11,6 +13,9 @@ module.exports = function(sequelize, DataTypes) {
         // associations can be defined here
         models.fishpic.belongsTo(models.fish);
         models.fishpic.belongsTo(models.user);
+      },
+      newPic: function(data) {
+
       }
     }
   });
