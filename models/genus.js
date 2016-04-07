@@ -31,8 +31,10 @@ module.exports = function(sequelize, DataTypes) {
       beforeFind: function(options, fn) {
         console.log("*********** before find!", arguments);
         if (options.where) {
-          if (options.where.name) {
-            options.where.name = options.where.name.toLowerCase()
+          if (options.where.name && options.where.name.toLowerCase) {
+            options.where.name = options.where.name.toLowerCase();
+          } else if (options.where.name.$like) {
+            options.where.name.$like = options.where.name.$like.toLowerCase();
           }
         }
         return fn(null, options);

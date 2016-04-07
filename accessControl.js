@@ -14,5 +14,8 @@ module.exports = {
 	},
 	hasRoleSynchronous: function(req, roleName) {
 		return req.user && req.user.hasRoleName(roleName);
+	},
+	sendNotLoggedIn: function(res) {
+		res.status(403).send({error:"You need to be logged in to do that!"});
 	}
 };

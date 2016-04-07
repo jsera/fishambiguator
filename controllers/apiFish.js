@@ -58,7 +58,7 @@ router.get("/:id", function(req, res) {
             where: {
                 id: id
             },
-            include: [db.genus]
+            include: [db.genus, db.fishpic]
         }).then(function(fish) {
             if (fish) {
                 res.send(fish.get());
@@ -90,7 +90,7 @@ router.put("/:id", function(req, res) {
             res.status(500).send({error: "Not a valid ID"});
         }
     } else {
-        res.status(403).send({error:"You need to be logged in to do that!"});
+        accessControl.sendNotLoggedIn(res);
     }
 });
 
