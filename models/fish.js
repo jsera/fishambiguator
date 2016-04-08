@@ -159,13 +159,14 @@ module.exports = function(sequelize, DataTypes) {
         var promiseHolder = promiseLib.getPromiseHolder();
         if (name && name.toLowerCase) {
           var Genus = sequelize.import("./genus");
+          var Pic = sequelize.import("./fishpic");
           this.findAll({
             where: {
                 commonnames: {
                     $like: "%"+name+"%"
                 }
             },
-            include: [Genus]
+            include: [Genus, Pic]
           }).then(function(fish) {
               promiseHolder.callback(fish);
           });

@@ -39,6 +39,31 @@ module.exports = function(sequelize, DataTypes) {
           promiseHolder.error("new pic requires a url, fish id and a user id");
         }
         return promiseLib.getPromise(promiseHolder);
+      },
+      updatePic: function(id, data) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        //
+        this.findOne({
+          where: {
+            id: id
+          }
+        }).then(function(pic) {
+          if (pic) {
+            if (data.url) {
+              pic.url = data.url;
+            }
+            if (data.caption) {
+              pic.caption = data.caption;
+            }
+            pic.save().then(function() {
+              promiseHolder.callback(pic);
+            });
+          } else {
+            promiseHolder.error("No pic by that ID");
+          }
+        });
+        //
+        return promiseLib.getPromise(promiseHolder);
       }
     }
   });

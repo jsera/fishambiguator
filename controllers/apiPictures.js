@@ -5,25 +5,30 @@ var accessControl = require("../accessControl");
 var constants = require("../constants");
 
 router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, accessControl.sendNotLoggedIn).unless({
-	method: "GET"
+	method: ["GET", "PUT"]
 }));
 
 router.post("/", function(req, res) {
-	if (accessControl.hasRoleSynchronous(constants.ROLE_EDITOR)) {
-		db.fishpic.newPic(req.body).then(function(pic) {
-			res.send(pic);
-		}).error(function(err) {
-			res.send({
-				error: err
-			});
+	db.fishpic.newPic(req.body).then(function(pic) {
+		res.send(pic);
+	}).error(function(err) {
+		res.send({
+			error: err
 		});
-	} else {
-		accessControl.sendNotLoggedIn(res);
-	}
+	});
 });
 
 router.put("/:id", function(req, res) {
-	
+	var id = parseInt(req.params.id);
+	if (!isNaN(id)) {
+		db.fishpic.updatePic(id, req.body).then(function(pic) {
+			res.send(pic);
+		}).error(function(err) {
+			res.send({error:err});
+		});
+	} else {
+		res.send({error: "Not a valid ID"});
+	}
 });
 
 router.delete("/:id", function(req, res) {
