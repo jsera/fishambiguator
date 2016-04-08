@@ -19,7 +19,7 @@ router.post("/", function(req, res) {
         if (fish) {
             res.redirect("/fish/edit/"+fish.id);
         } else {
-            res.send(err);
+            res.status(500).send(err);
         }
     });
 });
@@ -43,7 +43,7 @@ router.get("/edit/:id", function(req, res) {
             });
         });
     } else {
-        res.render("500");
+        res.status(500).render("500");
     }
 });
 
