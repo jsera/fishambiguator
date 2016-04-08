@@ -4,6 +4,10 @@ var db = require("../models/");
 var accessControl = require("../accessControl");
 var constants = require("../constants");
 
+router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, accessControl.sendNotLoggedIn).unless({
+    method: "GET"
+}));
+
 router.get("/", function(req, res) {
     if (req.query.scientificname || req.query.commonname) {
         if (req.query.scientificname && db.fish.testScientificName(req.query.scientificname)) {
@@ -76,21 +80,17 @@ router.get("/:id", function(req, res) {
 });
 
 router.put("/:id", function(req, res) {
-    if (accessControl.hasRoleSynchronous(req, constants.ROLE_EDITOR)) {
-        var id = parseInt(req.params.id);
-        if (!isNaN(id)) {
-            console.log("********** Has a body?", req.body);
-            db.fish.updateFish(id, req.body).then(function(fish) {
-                console.log("******* Fish updated?");
-                res.send(fish.get());
-            }).error(function(err) {
-                res.status(500).send({error:err});
-            });
-        } else {
-            res.status(500).send({error: "Not a valid ID"});
-        }
+    var id = parseInt(req.params.id);
+    if (!isNaN(id)) {
+        console.log("********** Has a body?", req.body);
+        db.fish.updateFish(id, req.body).then(function(fish) {
+            console.log("******* Fish updated?");
+            res.send(fish.get());
+        }).error(function(err) {
+            res.status(500).send({error:err});
+        });
     } else {
-        accessControl.sendNotLoggedIn(res);
+        res.status(500).send({error: "Not a valid ID"});
     }
 });
 

@@ -4,6 +4,10 @@ var db = require("../models/");
 var accessControl = require("../accessControl");
 var constants = require("../constants");
 
+router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, accessControl.sendNotLoggedIn).unless({
+	method: "GET"
+}));
+
 router.post("/", function(req, res) {
 	if (accessControl.hasRoleSynchronous(constants.ROLE_EDITOR)) {
 		db.fishpic.newPic(req.body).then(function(pic) {
@@ -16,6 +20,14 @@ router.post("/", function(req, res) {
 	} else {
 		accessControl.sendNotLoggedIn(res);
 	}
+});
+
+router.put("/:id", function(req, res) {
+	
+});
+
+router.delete("/:id", function(req, res) {
+
 });
 
 module.exports = router;

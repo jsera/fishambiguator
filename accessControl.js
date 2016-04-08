@@ -1,6 +1,6 @@
 module.exports = {
 	hasRoleExclusive: function(roleName, error) {
-		return function(req, res, next) {
+		var restrict = function(req, res, next) {
 			if (req.user) {
 		        if (req.user.hasRoleName(roleName)) {
 		            next();
@@ -11,11 +11,13 @@ module.exports = {
 		        error(req, res);
 		    }
 		}
+		restrict.unless = require("express-unless");
+		return restrict;
 	},
 	hasRoleSynchronous: function(req, roleName) {
 		return req.user && req.user.hasRoleName(roleName);
 	},
-	sendNotLoggedIn: function(res) {
+	sendNotLoggedIn: function(req, res) {
 		res.status(403).send({error:"You need to be logged in to do that!"});
 	}
 };
