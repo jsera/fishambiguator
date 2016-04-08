@@ -5,7 +5,7 @@ var accessControl = require("../accessControl");
 var constants = require("../constants");
 
 router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, accessControl.sendNotLoggedIn).unless({
-	method: ["GET", "PUT"]
+	method: ["GET"]
 }));
 
 router.post("/", function(req, res) {
