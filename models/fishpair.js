@@ -15,6 +15,9 @@ module.exports = function(sequelize, DataTypes) {
           foreignKey: "fish2"
         });
         models.fishpair.belongsTo(models.fishpairunique);
+      },
+      newPair: function() {
+        // Reverse pairs defined/enforced here
       }
     }
   });
