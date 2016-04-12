@@ -5,23 +5,15 @@ var db = require("../models/");
 var accessControl = require("../accessControl");
 
 // Editors only!
-router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, function(req, res) {
+var errorRedirect = function(req, res) {
     res.redirect("/");
-}).unless(function(req) {
-    var url = req.originalUrl.toString();
-    if (url.indexOf("/edit") == -1) {
-        if (url.indexOf("/commonname") != -1) {
-            return true;
-        }
-    }
-    return false;
-}));
+};
 
-router.get("/add", function(req, res) {
+router.get("/add", accessControl.hasRoleRoute(constants.ROLE_EDITOR, function(req, res) {
 	res.render("fish/add", {fish:{}});
-});
+}, errorRedirect));
 
-router.post("/", function(req, res) {
+router.post("/", accessControl.hasRoleRoute(constants.ROLE_EDITOR, function(req, res) {
 	// redirect to edit fish
 	db.fish.newFish(req.body, function(fish, err) {
         if (fish) {
@@ -30,9 +22,9 @@ router.post("/", function(req, res) {
             res.status(500).send(err);
         }
     });
-});
+}, errorRedirect));
 
-router.get("/edit/:id", function(req, res) {
+router.get("/edit/:id", accessControl.hasRoleRoute(constants.ROLE_EDITOR, function(req, res) {
     var id = parseInt(req.params.id);
     if (!isNaN(id)) {
         var query = db.fish.getGenericQuery();
@@ -57,7 +49,7 @@ router.get("/edit/:id", function(req, res) {
     } else {
         res.status(500).render("500");
     }
-});
+}, errorRedirect));
 
 router.get("/commonname", function(req, res) {
     res.render("fish/commonname.ejs");
@@ -100,6 +92,10 @@ router.get("/commonname/:letter", function(req, res) {
     } else {
         res.status(500).render("500");
     }
+});
+
+router.get("/:id", function(req, res) {
+
 });
 
 module.exports = router;
