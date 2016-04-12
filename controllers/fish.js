@@ -7,6 +7,14 @@ var accessControl = require("../accessControl");
 // Editors only!
 router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, function(req, res) {
     res.redirect("/");
+}).unless(function(req) {
+    var url = req.originalUrl.toString();
+    if (url.indexOf("/edit") == -1) {
+        if (url.indexOf("/commonname") != -1) {
+            return true;
+        }
+    }
+    return false;
 }));
 
 router.get("/add", function(req, res) {
@@ -45,6 +53,49 @@ router.get("/edit/:id", function(req, res) {
                 action: "/fish/edit/"+id,
                 currentUser: req.user
             });
+        });
+    } else {
+        res.status(500).render("500");
+    }
+});
+
+router.get("/commonname", function(req, res) {
+    res.render("fish/commonname.ejs");
+});
+
+router.get("/commonname/:letter", function(req, res) {
+    var letter = req.params.letter;
+    if (letter && letter.substr) {
+        letter = letter.substr(0, 1);
+        db.fish.findByFirstLetter(letter).then(function(results) {
+            var fish = results.map(function (fish) {
+                return fish.get();
+            });
+            var byName = [];
+            fish.forEach(function(fish) {
+                var names = fish.commonnames.split(",");
+                names.forEach(function(name) {
+                    if (name.indexOf(letter) === 0) {
+                        byName.push({
+                            name: name,
+                            id: fish.id
+                        });
+                    }
+                });
+            });
+
+            byName.sort(function(a,b) {
+                if (a.name > b.name) {
+                    return 1;
+                } else if (a.name < b.name) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+            res.render("fish/commonnamelist", {fishes:byName, letter: letter});
+        }).error(function(err) {
+            res.status(500).render("500");
         });
     } else {
         res.status(500).render("500");

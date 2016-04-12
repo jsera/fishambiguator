@@ -1,0 +1,6 @@
+<h1>Fish common names starting with <%= letter.toUpperCase() %></h1>
+<ul>
+    <% fishes.forEach(function(fish) { %>
+        <li><a href="/fish/<%= fish.id %>"><%= fish.name %></a></li>
+    <% }); %>
+</ul>

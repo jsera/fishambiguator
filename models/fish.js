@@ -183,8 +183,8 @@ module.exports = function(sequelize, DataTypes) {
       },
       findByFirstLetter: function(letter) {
         var promiseHolder = promiseLib.getPromiseHolder();
-        if (letter && letter.substr) {
-          letter = letter.substr(0, 1);
+        if (letter && letter.length === 1 && letter.toLowerCase) {
+          letter = letter.toLowerCase();
           sequelize.query("SELECT * FROM fishes WHERE commonnames LIKE ANY(ARRAY['"+letter+"%', '%,"+letter+"%'])", {model: this}).then(function(fishes) {
             promiseHolder.callback(fishes);
           });
