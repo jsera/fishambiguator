@@ -17,6 +17,18 @@
             <input type="text" ng-model="pic.caption" id="caption{{$index}}" name="caption" />
         </div>
         <button class="btn btn-primary" ng-click="updatePic($event, pic)" ng-disabled="pic.btnDisabled">Update</button>
-        <button class="btn btn-secondary" ng-disabled="pic.btnDisabled">Delete</button>
+        <button class="btn btn-secondary" ng-click="deletePic($event, pic)" ng-disabled="pic.btnDisabled">Delete</button>
+    </form>
+    <h2>Add a picture!</h2>
+    <form class="pic-form">
+        <div>
+            <label for="newPicURL">URL:</label>
+            <input type="text" ng-model="newPic.url" id="newPicURL" name="url" />
+        </div>
+        <div>
+            <label for="newPicCaption">Caption:</label>
+            <input type="text" ng-model="newPic.caption" id="newPicCaption" name="caption" />
+        </div>
+        <button ng-click="addPic($event)" ng-disabled="newPicDiabled">Add new pic</button>
     </form>
 </div>

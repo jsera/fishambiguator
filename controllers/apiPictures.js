@@ -32,7 +32,20 @@ router.put("/:id", function(req, res) {
 });
 
 router.delete("/:id", function(req, res) {
-
+	var id = parseInt(req.params.id);
+	if (!isNaN(id)) {
+		db.fishpic.findById(id).then(function(pic) {
+			if (pic) {
+				pic.destroy().then(function() {
+					res.send(pic.get());
+				});
+			} else {
+				res.send({error: "No pic by that ID"});
+			}
+		});
+	} else {
+		res.send({error: "Not a valid ID"});
+	}
 });
 
 module.exports = router;
