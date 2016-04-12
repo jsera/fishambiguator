@@ -31,15 +31,20 @@ router.get("/edit/:id", function(req, res) {
             where: {
                 id: id
             },
-            include: [db.genus]
+            include: [db.genus, db.fishpic]
         }).then(function(fish) {
+            var jsonPics = fish.fishpics.map(function(pic) {
+                return pic.get();
+            });
             res.render("fish/edit", {
                 fish:{
                     id: fish.id,
                     scientificName: fish.getScientificName(), 
-                    commonnames: fish.commonnames
+                    commonnames: fish.commonnames,
+                    fishpics: jsonPics
                 },
-                action: "/fish/edit/"+id
+                action: "/fish/edit/"+id,
+                currentUser: req.user
             });
         });
     } else {
