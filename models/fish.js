@@ -29,6 +29,19 @@ var beforeCreateOrUpdate = function(fish, options) {
 };
 
 module.exports = function(sequelize, DataTypes) {
+  var Genus = sequelize.import("./genus");
+  var Pic = sequelize.import("./fishpic");
+
+  var getGenericQuery = function() {
+    return {
+      include: [Genus, Pic],
+      order: [
+        [Genus, "id"],
+        [Pic, "id"]
+      ]
+    };
+  };
+
   var fish = sequelize.define('fish', {
     species: DataTypes.STRING,
     genusId: DataTypes.INTEGER,
@@ -42,6 +55,7 @@ module.exports = function(sequelize, DataTypes) {
         models.fish.belongsTo(models.genus, {foreignKey: "genusId"});
       },
       testScientificName: testScientificName,
+      getGenericQuery: getGenericQuery,
       /*
         params:
           string commonnames - a comma delimited list of common names
@@ -74,21 +88,18 @@ module.exports = function(sequelize, DataTypes) {
         var promiseHolder = promiseLib.getPromiseHolder();
         var scope = this;
         if (params.commonnames || params.scientificname) {
-          var Genus = sequelize.import("./genus");
-          this.findOne({
-            where: {
-              id: id
-            },
-            include: [Genus]
-          }).then(function(fish) {
+          var query = getGenericQuery();
+          query.where = {
+            id: id
+          };
+          this.findOne(query).then(function(fish) {
             if (fish) {
               var finalFishLoad = function() {
-                scope.findOne({
-                  where: {
-                    id: fish.id
-                  },
-                  include: [Genus]
-                }).then(function(finalFish) {
+                var query = getGenericQuery();
+                query.where = {
+                  id: fish.id
+                };
+                scope.findOne(query).then(function(finalFish) {
                   promiseHolder.callback(finalFish);
                 });
               };
@@ -129,22 +140,20 @@ module.exports = function(sequelize, DataTypes) {
         var scope = this;
         if (name && testScientificName(name)) {
           var nameParts = name.split(" ");
-          var Genus = sequelize.import("./genus");
           Genus.find({
               where: {
                   name: nameParts[0]
               }
           }).then(function(genus) {
               if (genus) {
-                  scope.findAll({
-                      where: {
-                          species: nameParts[1],
-                          genusId: genus.id
-                      },
-                      include: [Genus]
-                  }).then(function(fish) {
-                      promiseHolder.callback(fish);
-                  });
+                var query = getGenericQuery();
+                query.where = {
+                    species: nameParts[1],
+                    genusId: genus.id
+                };
+                scope.findAll(query).then(function(fish) {
+                    promiseHolder.callback(fish);
+                });
               } else {
                   promiseHolder.callback(fish);
               }
@@ -158,16 +167,13 @@ module.exports = function(sequelize, DataTypes) {
       findByCommonName: function(name) {
         var promiseHolder = promiseLib.getPromiseHolder();
         if (name && name.toLowerCase) {
-          var Genus = sequelize.import("./genus");
-          var Pic = sequelize.import("./fishpic");
-          this.findAll({
-            where: {
-                commonnames: {
-                    $like: "%"+name+"%"
-                }
-            },
-            include: [Genus, Pic]
-          }).then(function(fish) {
+          var query = getGenericQuery();
+          query.where = {
+              commonnames: {
+                  $like: "%"+name+"%"
+              }
+          }
+          this.findAll(query).then(function(fish) {
               promiseHolder.callback(fish);
           });
         } else {
@@ -187,7 +193,6 @@ module.exports = function(sequelize, DataTypes) {
           // set species name directly on fish
           this.species = parts[1];
           // findOrCreate on genus name
-          var Genus = sequelize.import("./genus");
           Genus.findOrCreate({
             where: {
               name: parts[0]
@@ -195,10 +200,11 @@ module.exports = function(sequelize, DataTypes) {
           }).spread(function(genus, created) {
             if (genus) {
               scope.setGenus(genus.id);
-              scope.save();
-              if (promiseHolder.callback) {
-                promiseHolder.callback(scope);
-              }
+              scope.save().then(function() {
+                if (promiseHolder.callback) {
+                  promiseHolder.callback(scope);
+                }
+              });
             } else {
               promiseHolder.error("Problem saving genus!");
             }

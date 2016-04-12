@@ -58,12 +58,11 @@ router.get("/", function(req, res) {
 router.get("/:id", function(req, res) {
     var id = parseInt(req.params.id);
     if (!isNaN(id)) {
-        db.fish.findOne({
-            where: {
-                id: id
-            },
-            include: [db.genus, db.fishpic]
-        }).then(function(fish) {
+        var query = db.fish.getGenericQuery();
+        query.where = {
+            id: id
+        };
+        db.fish.findOne(query).then(function(fish) {
             if (fish) {
                 res.send(fish.get());
             } else {

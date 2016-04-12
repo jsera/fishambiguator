@@ -27,12 +27,11 @@ router.post("/", function(req, res) {
 router.get("/edit/:id", function(req, res) {
     var id = parseInt(req.params.id);
     if (!isNaN(id)) {
-        db.fish.find({
-            where: {
-                id: id
-            },
-            include: [db.genus, db.fishpic]
-        }).then(function(fish) {
+        var query = db.fish.getGenericQuery();
+        query.where = {
+            id: id
+        };
+        db.fish.find(query).then(function(fish) {
             var jsonPics = fish.fishpics.map(function(pic) {
                 return pic.get();
             });
