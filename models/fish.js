@@ -180,6 +180,18 @@ module.exports = function(sequelize, DataTypes) {
           promiseHolder.error("Not a valid common name");
         }
         return promiseLib.getPromise(promiseHolder);
+      },
+      findByFirstLetter: function(letter) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (letter && letter.substr) {
+          letter = letter.substr(0, 1);
+          sequelize.query("SELECT * FROM fishes WHERE commonnames LIKE ANY(ARRAY['"+letter+"%', '%,"+letter+"%'])", {model: this}).then(function(fishes) {
+            promiseHolder.callback(fishes);
+          });
+        } else {
+          promiseHolder.error("Not a valid query!");
+        }
+        return promiseLib.getPromise(promiseHolder);
       }
     },
     instanceMethods: {
@@ -241,8 +253,12 @@ module.exports = function(sequelize, DataTypes) {
             if (opts.where.commonnames.toLowerCase) {
               opts.where.commonnames = opts.where.commonnames.toLowerCase();
             } else {
-              if (opts.where.commonnames.$like) {
+              if (opts.where.commonnames.$like && opts.where.commonnames.$like.toLowerCase) {
                 opts.where.commonnames.$like = opts.where.commonnames.$like.toLowerCase();
+              } else if (opts.where.commonnames.$like.$any) {
+                opts.where.commonnames.$like.$any = opts.where.commonnames.$like.$any.map(function(clause) {
+                  return clause.toLowerCase();
+                });
               }
             }
           }
