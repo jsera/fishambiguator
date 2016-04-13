@@ -57,7 +57,8 @@ router.get("/", function(req, res) {
 
 router.get("/autocomplete", function(req, res) {
     var q = req.query.q;
-    if (q) {
+    if (q && q.toLowerCase) {
+        q = q.toLowerCase();
         db.fish.findCommonNameAutocomplete(q).then(function(results) {
             var simpleResults = results.map(function(fish) {
                 return fish.get();

@@ -24,7 +24,8 @@ router.get("/", function(req, res) {
 router.get("/autocomplete", function(req, res) {
 	// Oh god, so much hassle because of circular dependencies!
 	var q = req.query.q;
-    if (q) {
+    if (q && q.toLowerCase) {
+    	q = q.toLowerCase();
     	db.fish.findGenusAutocomplete(q, db.genus).then(function(genera) {
     		var fishname = q.toLowerCase().split(" ")[1];
     		var result = [];

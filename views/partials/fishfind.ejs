@@ -2,7 +2,7 @@
 
     <h1>Add/edit pairing</h1>
     <!-- Common name search -->
-    <div>
+    <div class="search-box">
         <input 
             type="text" 
             ng-model="commonname" 
@@ -11,13 +11,13 @@
             typeahead-no-results="noResults" class="form-control"
             uib-typeahead="fish for fish in autocompleteCommonName($viewValue)" />
         <i ng-show="loadingFish" class="glyphicon glyphicon-refresh"></i>
-        <div ng-show="noResults">
+        <div ng-show="noResults" class="no-results">
           <i class="glyphicon glyphicon-remove"></i> No Results Found
         </div>
         <button class="btn btn-primary" ng-click="searchByCommonName($event)">Search</button>
     </div>
     <!-- Binomial name search -->
-    <div>
+    <div class="search-box">
         <input 
             type="text" 
             ng-model="binomialname" 
@@ -26,9 +26,29 @@
             typeahead-no-results="noBinomialResults" class="form-control"
             uib-typeahead="fish for fish in autocompleteBinomial($viewValue)" />
         <i ng-show="loadingBinomial" class="glyphicon glyphicon-refresh"></i>
-        <div ng-show="noBinomialResults">
+        <div ng-show="noBinomialResults" class="no-results">
           <i class="glyphicon glyphicon-remove"></i> No Results Found
         </div>
         <button class="btn btn-primary" ng-click="searchByBinomial($event)">Search</button>
+    </div>
+    <div ng-show="fishFound">
+        <div>
+            <h1>{{fish.binomialName}}</h1>
+            <h2>{{fish.formattedCommonNames}}</h2>
+            <% if (user && user.hasRoleName(constants.ROLE_EDITOR)) { %>
+                <a ng-href="{{'/fish/edit/'+fish.id}}">Edit fish</a>
+            <% } %>
+        </div>
+        <uib-carousel active="active" class="pic-carousel">
+            <uib-slide ng-repeat="slide in fish.fishpics track by $index" index="$index">
+                <img ng-src="{{slide.url}}" />
+                <div>
+                    <h3>{{slide.caption}}</h3>
+                </div>
+            </uib-slide>
+        </uib-carousel>
+    </div>
+    <div ng-show="noFishFound">
+        <h3>No fish found!</h3>
     </div>
 </div>
