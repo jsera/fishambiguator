@@ -1,0 +1,6 @@
+<h1>Genera starting with letter <%= letter.toUpperCase() %></h1>
+<ul>
+    <% genera.forEach(function(genus) { %>
+    <li><a href="/genus/<%= genus.id %>"><%= genus.name %></a></li>
+    <% }); %>
+</ul>

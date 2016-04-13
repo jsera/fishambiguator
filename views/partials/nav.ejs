@@ -1,6 +1,7 @@
 <nav>
     <ul>
-        <li><a href="/fish/commonname/">Search fish by common name</a></li>
+        <li><a href="/fish/commonname/">Search by common name</a></li>
+        <li><a href="/genus/letter/">Search by genus</a></li>
         <% if (user) { %>
             <% if (user.hasRoleName(constants.ROLE_SUPERUSER)) { %>
                 <li><a href="/user/edit">Edit user</a></li>

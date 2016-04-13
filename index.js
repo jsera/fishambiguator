@@ -61,6 +61,7 @@ app.get("/logout", function(req, res) {
 
 app.use("/auth", require("./controllers/auth"));
 app.use("/fish", require("./controllers/fish"));
+app.use("/genus", require("./controllers/genus"));
 app.use("/api/fish", require("./controllers/apiFish"));
 app.use("/api/genus", require("./controllers/apiGenus"));
 app.use("/api/pictures", require("./controllers/apiPictures"));

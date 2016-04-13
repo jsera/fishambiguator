@@ -1,0 +1,7 @@
+<h1><%= genus.name %></h1>
+<h2>Fish in this genus:</h2>
+<ul>
+    <% genus.fishes.forEach(function(fish) { %>
+        <li><a href="/fish/<%= fish.id %>"><%= genus.name %> <%= fish.species %></a></li>
+    <% }) %>
+</ul>

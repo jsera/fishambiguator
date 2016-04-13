@@ -52,7 +52,7 @@ router.get("/edit/:id", accessControl.hasRoleRoute(constants.ROLE_EDITOR, functi
 }, errorRedirect));
 
 router.get("/commonname", function(req, res) {
-    res.render("fish/commonname.ejs");
+    res.render("fish/commonname.ejs", {nameListBaseURL:"/fish/commonname/"});
 });
 
 router.get("/commonname/:letter", function(req, res) {
