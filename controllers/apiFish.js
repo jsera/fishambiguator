@@ -93,4 +93,8 @@ router.put("/:id", function(req, res) {
     }
 });
 
+router.delete("/:id", function(req, res) {
+    res.send({message:"Not implemented yet"});
+});
+
 module.exports = router;
