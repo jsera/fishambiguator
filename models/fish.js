@@ -204,6 +204,33 @@ module.exports = function(sequelize, DataTypes) {
           promiseHolder.error("Not a valid query!");
         }
         return promiseLib.getPromise(promiseHolder);
+      },
+      findGenusAutocomplete: function(query, dbGenus) {
+        // dbGenus is needed because if Fish requires Genus, and Genus requires Fish,
+        // we get a maximum call stack exceeded error. Super annoying, and this is super ugly.
+        var promiseHolder = promiseLib.getPromiseHolder();
+        var scope = this;
+        if (query.toLowerCase && query.split) {
+          var names = query.toLowerCase().split(" ");
+          if (names.length <= 2) {
+            dbGenus.findAll({
+              where: {
+                name: {
+                  $like: names[0]+"%"
+                }
+              },
+              include: [scope]
+            }).then(function (genera) {
+              // Argh, the caller has to deal with filtering species because reasons.
+              promiseHolder.callback(genera);
+            });
+          } else {
+            promiseHolder.error("Not a valid binomial");
+          }
+        } else {
+          promiseHolder.error("Not a valid query!");
+        }
+        return promiseLib.getPromise(promiseHolder);
       }
     },
     instanceMethods: {

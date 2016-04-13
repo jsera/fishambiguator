@@ -21,6 +21,43 @@ router.get("/", function(req, res) {
 	});
 });
 
+router.get("/autocomplete", function(req, res) {
+	// Oh god, so much hassle because of circular dependencies!
+	var q = req.query.q;
+    if (q) {
+    	db.fish.findGenusAutocomplete(q, db.genus).then(function(genera) {
+    		var fishname = q.toLowerCase().split(" ")[1];
+    		var result = [];
+    		var simpleGenera = [];
+    		genera.forEach(function(genus) {
+    			simpleGenera.push(genus.get());
+    		});
+    		simpleGenera.forEach(function(genus) {
+    			var fishes = genus.fishes;
+    			genus.fishes = null;
+    			if (fishname) {
+    				fishes.forEach(function(fish) {
+    					fish = fish.get();
+    					if (fish.species.indexOf(fishname) == 0) {
+	    					fish.genus = genus;
+	    					result.push(fish);
+	    				}
+    				});
+    			} else {
+    				fishes.forEach(function(fish) {
+    					fish = fish.get();
+    					fish.genus = genus;
+    					result.push(fish);
+    				});
+    			}
+    		});
+    		res.send(result);
+    	});
+    } else {
+        res.send({message:"No query specified"});
+    }
+});
+
 router.get("/:id", function(req, res) {
 	var id = parseInt(req.params.id);
 	if (!isNaN(id)) {

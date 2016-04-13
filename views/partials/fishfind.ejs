@@ -1,15 +1,34 @@
-<div ng-controller="FishFindCtrl">
+<div ng-controller="FishFindCtrl" class="fish-finder">
 
     <h1>Add/edit pairing</h1>
-    <input 
-        type="text" 
-        ng-model="commonname" 
-        placeholder="Search by common name" 
-        typeahead-loading="loadingLocations" 
-        typeahead-no-results="noResults" class="form-control"
-        uib-typeahead="fish for fish in autocompleteCommonName($viewValue)" />
-    <i ng-show="loadingFish" class="glyphicon glyphicon-refresh"></i>
-    <div ng-show="noResults">
-      <i class="glyphicon glyphicon-remove"></i> No Results Found
+    <!-- Common name search -->
+    <div>
+        <input 
+            type="text" 
+            ng-model="commonname" 
+            placeholder="Search by common name" 
+            typeahead-loading="loadingLocations" 
+            typeahead-no-results="noResults" class="form-control"
+            uib-typeahead="fish for fish in autocompleteCommonName($viewValue)" />
+        <i ng-show="loadingFish" class="glyphicon glyphicon-refresh"></i>
+        <div ng-show="noResults">
+          <i class="glyphicon glyphicon-remove"></i> No Results Found
+        </div>
+        <button class="btn btn-primary" ng-click="searchByCommonName($event)">Search</button>
+    </div>
+    <!-- Binomial name search -->
+    <div>
+        <input 
+            type="text" 
+            ng-model="binomialname" 
+            placeholder="Search by scientific name" 
+            typeahead-loading="loadingBinomial" 
+            typeahead-no-results="noBinomialResults" class="form-control"
+            uib-typeahead="fish for fish in autocompleteBinomial($viewValue)" />
+        <i ng-show="loadingBinomial" class="glyphicon glyphicon-refresh"></i>
+        <div ng-show="noBinomialResults">
+          <i class="glyphicon glyphicon-remove"></i> No Results Found
+        </div>
+        <button class="btn btn-primary" ng-click="searchByBinomial($event)">Search</button>
     </div>
 </div>
