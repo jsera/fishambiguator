@@ -1,3 +1,17 @@
-<div ng-controller="SpecificFishCtrl" ng-init="fish.images = <%= picJSON %>">
-    
+<div ng-controller="SpecificFishCtrl" ng-init="fish = <%= fishJSON %>">
+    <div>
+        <h1>{{fish.binomialName}}</h1>
+        <h2>{{fish.formattedCommonNames}}</h2>
+        <% if (user && user.hasRoleName(constants.ROLE_EDITOR)) { %>
+            <a href="/fish/edit/<%= fishId %>">Edit fish</a>
+        <% } %>
+    </div>
+    <uib-carousel active="active" class="pic-carousel">
+        <uib-slide ng-repeat="slide in fish.fishpics track by $index" index="$index">
+            <img ng-src="{{slide.url}}" />
+            <div>
+                <h3>{{slide.caption}}</h3>
+            </div>
+        </uib-slide>
+    </uib-carousel>
 </div>

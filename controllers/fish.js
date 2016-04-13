@@ -95,7 +95,25 @@ router.get("/commonname/:letter", function(req, res) {
 });
 
 router.get("/:id", function(req, res) {
-
+    var id = parseInt(req.params.id);
+    if (!isNaN(id)) {
+        var query = db.fish.getGenericQuery();
+        query.where = {
+            id: id
+        };
+        db.fish.findOne(query).then(function(fish) {
+            if (fish) {
+                var simpleFish = fish.get();
+                simpleFish.binomialName = simpleFish.genus.name+" "+simpleFish.species;
+                simpleFish.formattedCommonNames = simpleFish.commonnames.split(",").join(", ");
+                res.render("fish/specificfish", {fishJSON:JSON.stringify(simpleFish), fishId:simpleFish.id});
+            } else {
+                res.status(500).render("500");
+            }
+        });
+    } else {
+        res.status(500).render("500");
+    }
 });
 
 module.exports = router;
