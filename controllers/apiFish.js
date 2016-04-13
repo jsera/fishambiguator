@@ -55,6 +55,32 @@ router.get("/", function(req, res) {
     }
 });
 
+router.get("/autocomplete", function(req, res) {
+    var q = req.query.q;
+    if (q) {
+        db.fish.findCommonNameAutocomplete(q).then(function(results) {
+            var simpleResults = results.map(function(fish) {
+                return fish.get();
+            });
+            var results = [];
+            simpleResults.forEach(function(fish) {
+                var commonnames = fish.commonnames.split(",");
+                commonnames.forEach(function(name) {
+                    if (name.indexOf(q) == 0) {
+                        fish.namematch = name;
+                        results.push(fish);
+                    }
+                });
+            });
+            res.send(results);
+        }).error(function(err) {
+            res.send({error:err});
+        });
+    } else {
+        res.send({message:"No query specified"});
+    }
+});
+
 router.get("/:id", function(req, res) {
     var id = parseInt(req.params.id);
     if (!isNaN(id)) {

@@ -192,6 +192,18 @@ module.exports = function(sequelize, DataTypes) {
           promiseHolder.error("Not a valid query!");
         }
         return promiseLib.getPromise(promiseHolder);
+      },
+      findCommonNameAutocomplete: function(query) {
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (query.toLowerCase) {
+          query = query.toLowerCase();
+          sequelize.query("SELECT * FROM fishes WHERE commonnames LIKE ANY(ARRAY['"+query+"%', '%,"+query+"%'])", {model: this}).then(function(fishes) {
+            promiseHolder.callback(fishes);
+          });
+        } else {
+          promiseHolder.error("Not a valid query!");
+        }
+        return promiseLib.getPromise(promiseHolder);
       }
     },
     instanceMethods: {

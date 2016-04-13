@@ -1,0 +1,15 @@
+<div ng-controller="FishFindCtrl">
+
+    <h1>Add/edit pairing</h1>
+    <input 
+        type="text" 
+        ng-model="commonname" 
+        placeholder="Search by common name" 
+        typeahead-loading="loadingLocations" 
+        typeahead-no-results="noResults" class="form-control"
+        uib-typeahead="fish for fish in autocompleteCommonName($viewValue)" />
+    <i ng-show="loadingFish" class="glyphicon glyphicon-refresh"></i>
+    <div ng-show="noResults">
+      <i class="glyphicon glyphicon-remove"></i> No Results Found
+    </div>
+</div>
