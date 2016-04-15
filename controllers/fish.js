@@ -15,12 +15,12 @@ router.get("/add", accessControl.hasRoleRoute(constants.ROLE_EDITOR, function(re
 
 router.post("/", accessControl.hasRoleRoute(constants.ROLE_EDITOR, function(req, res) {
 	// redirect to edit fish
-	db.fish.newFish(req.body, function(fish, err) {
+	db.fish.newFish(req.body).then(function(fish) {
         if (fish) {
             res.redirect("/fish/edit/"+fish.id);
-        } else {
-            res.status(500).send(err);
         }
+    }).error(function(err) {
+        res.status(500).send(err);
     });
 }, errorRedirect));
 

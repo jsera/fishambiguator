@@ -210,7 +210,7 @@ describe("Fish creation and update tests", function() {
 		db.fish.newFish({
 			commonnames: "foo, bar",
 			scientificName: "fooius barrius"
-		}, function(fish, err) {
+		}).then(function(fish) {
 			assert(fish != null, "New fish is not null");
 			testFish = fish;
 			assert(fish.commonnames == "foo,bar", "New fish has the proper common names");

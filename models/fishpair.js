@@ -42,8 +42,8 @@ module.exports = function(sequelize, DataTypes) {
             var higherId = parseInt(opts.where.fish2);
             if (!isNaN(lowerId) && !isNaN(higherId)) {
               if (lowerId > higherId) {
-                opts.fish1 = higherId;
-                opts.fish2 = lowerId;
+                opts.where.fish1 = higherId;
+                opts.where.fish2 = lowerId;
               }
             }
           }

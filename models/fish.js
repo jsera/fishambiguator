@@ -50,7 +50,6 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
-        models.fish.hasMany(models.fishpair);
         models.fish.hasMany(models.fishpic);
         models.fish.belongsTo(models.genus, {foreignKey: "genusId"});
       },
@@ -61,23 +60,25 @@ module.exports = function(sequelize, DataTypes) {
           string commonnames - a comma delimited list of common names
           string scientificname - the scientific name, (genus species) ex: "ophidon elongatus"
       */
-      newFish: function(params, callback) {
+      newFish: function(params) {
+        var promiseHolder = promiseLib.getPromiseHolder();
         if (params.commonnames && params.scientificName) {
           this.create({
             commonnames: params.commonnames
           }).then(function(fish) {
             if (fish) {
               fish.setScientificName(params.scientificName).then(function(fish) {
-                callback(fish);
+                promiseHolder.callback(fish);
               });
             } else {
-              callback(null, "Fish wasn't created");
+              promiseHolder.error("Fish wasn't created");
             }
           });
         } else {
           // params no formatted right
-          callback(null, "Params not formatted right");
+          promiseHolder.error("Params not formatted right");
         }
+        return promiseLib.getPromise(promiseHolder);
       },
       /*
         params:
