@@ -21,6 +21,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         // associations can be defined here
+        models.fishpair.hasMany(models.fishpair_comment);
         models.fishpair.belongsTo(models.fish, {
           foreignKey: "fish1"
         });
