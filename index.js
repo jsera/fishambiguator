@@ -1,6 +1,12 @@
 var express = require("express");
 var app = express();
 var passport = require("passport");
+// load config for environment
+var app_config = require("./config/"+process.env.BUILD_ENV+"-config");
+app.use(function(req, res, next) {
+    res.locals.APP_CONFIG = app_config;
+    next();
+});
 
 // Use EJS layoyuts
 var ejsLayouts = require("express-ejs-layouts");

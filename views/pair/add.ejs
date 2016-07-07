@@ -1,4 +1,15 @@
 <% include ../partials/fishfind %>
-<div ng-controller="PairAddCtrl">
-<fish-finder sender-id="fish1" />
+<% include ../partials/commentEditor %>
+<h1>Add/edit pairing</h1>
+<div ng-controller="PairAddCtrl" class="pair-add">
+    <div>
+        <fish-finder sender-id="fish1" />
+    </div>
+    <div>
+        <!-- Comments on pairing go here -->
+        <comment-editor />
+    </div>
+    <div>
+        <fish-finder sender-id="fish2" />
+    </div>
 </div>

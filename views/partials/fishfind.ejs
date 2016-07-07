@@ -1,7 +1,5 @@
 <script type="text/ng-template" id="tpl-fish-finder">
 <div ng-controller="FishFindCtrl" class="fish-finder">
-
-    <h1>Add/edit pairing</h1>
     <!-- Common name search -->
     <div class="search-box">
         <input 
@@ -13,22 +11,23 @@
             uib-typeahead="fish for fish in autocompleteCommonName($viewValue)" />
         <i ng-show="loadingFish" class="glyphicon glyphicon-refresh"></i>
         <div ng-show="noResults" class="no-results">
-          <i class="glyphicon glyphicon-remove"></i> No Results Found
+          <i class="glyphicon glyphicon-remove" ng-click="closeNoResults()"></i> No Results Found
         </div>
         <button class="btn btn-primary" ng-click="searchByCommonName($event)">Search</button>
     </div>
     <!-- Binomial name search -->
     <div class="search-box">
         <input 
+            class="form-control"
             type="text" 
             ng-model="binomialname" 
             placeholder="Search by scientific name" 
             typeahead-loading="loadingBinomial" 
-            typeahead-no-results="noBinomialResults" class="form-control"
+            typeahead-no-results="noBinomialResults" 
             uib-typeahead="fish for fish in autocompleteBinomial($viewValue)" />
         <i ng-show="loadingBinomial" class="glyphicon glyphicon-refresh"></i>
-        <div ng-show="noBinomialResults" class="no-results">
-          <i class="glyphicon glyphicon-remove"></i> No Results Found
+        <div ng-show="noBinomialResults" class="no-results" auto-close="enabled">
+          <i class="glyphicon glyphicon-remove" ng-click="closeNoResults()"></i> No Results Found
         </div>
         <button class="btn btn-primary" ng-click="searchByBinomial($event)">Search</button>
     </div>
