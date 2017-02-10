@@ -6,3 +6,29 @@
 // We want author name, date, and comment body.
 
 // on comment update, we need to check if the curent user owns this comment, unless the user is a superuser.
+var express = require("express");
+var router = express.Router();
+var db = require("../models/");
+var accessControl = require("../accessControl");
+var constants = require("../constants");
+
+router.use(accessControl.hasRoleExclusive(constants.ROLE_EDITOR, accessControl.sendNotLoggedIn).unless({
+    method: "GET"
+}));
+
+router.get("/:id", function(req, res) {
+    var id = req.params.id;
+    if (!isNaN(id)) {
+        db.fishpair_comment.findOne({
+            where:{
+                id:id
+            }
+        })
+    } else {
+        res.send({
+            error: "That's not a proper ID"
+        });
+    }
+});
+
+module.exports = router;

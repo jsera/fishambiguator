@@ -72,6 +72,7 @@ app.use("/pair", require("./controllers/pair"));
 app.use("/api/fish", require("./controllers/apiFish"));
 app.use("/api/genus", require("./controllers/apiGenus"));
 app.use("/api/pictures", require("./controllers/apiPictures"));
+app.use("/api/pair", require("./controllers/apiPair"));
 
 // custom 404
 app.use(function(req, res, next) {
