@@ -23,12 +23,24 @@ router.get("/:id", function(req, res) {
             where:{
                 id:id
             }
-        })
+        }).then(function(comment) {
+            if (comment) {
+                res.send(comment.get());
+            } else {
+                res.send({
+                    error: "Invalid comment ID"
+                });
+            }
+        });
     } else {
         res.send({
             error: "That's not a proper ID"
         });
     }
+});
+
+router.post("/", function(req, res) {
+    
 });
 
 module.exports = router;

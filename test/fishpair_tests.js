@@ -8,9 +8,12 @@ describe("Fish pair tests", function() {
     var testPair = null;
     var testFish1 = null;
     var testFish2 = null;
+    var testFish3 = null;
+    var testFish4 = null;
+    var testPair2 = null;
 
     before(function(done) {
-        var doneCount = 2;
+        var doneCount = 4;
         var isDone = function() {
             if (--doneCount == 0) {
                 done();
@@ -30,6 +33,22 @@ describe("Fish pair tests", function() {
             scientificName: "fooius barrius"
         }).then(function(fish) {
             testFish2 = fish;
+            isDone();
+        });
+
+        db.fish.newFish({
+            commonnames: "baz fish",
+            scientificName: "Bazzius fishius"
+        }).then(function(fish) {
+            testFish3 = fish;
+            isDone();
+        });
+
+        db.fish.newFish({
+            commonnames: "banded quux",
+            scientificName: "stripius quuxius"
+        }).then(function(fish) {
+            testFish4 = fish;
             isDone();
         });
     });
@@ -78,13 +97,30 @@ describe("Fish pair tests", function() {
         });
     });
 
+    it("Is going to use the newPair function", function(done) {
+        db.fishpair.newPair(
+            testFish3.id, 
+            testFish4.id
+        ).then(function(pair) {
+            testPair2 = pair;
+            console.log("Used newPair! ", pair.get());
+            done();
+        });
+    });
+
     after(function(done) {
         db.genus.findById(testFish1.genusId).then(function(genus) {
             testFish1.destroy().then(function() {
                 testFish2.destroy().then(function() {
                     genus.destroy().then(function() {
                         testPair.destroy().then(function() {
-                            done();
+                            testFish3.destroy().then(function() {
+                                testFish4.destroy().then(function() {
+                                    testPair2.destroy().then(function() {
+                                        done();
+                                    });
+                                });
+                            });
                         });
                     });
                 });

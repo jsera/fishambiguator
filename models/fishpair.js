@@ -1,4 +1,6 @@
 'use strict';
+var db = require("./");
+var promiseLib = require("../promiseLib/");
 /**
   We're enforcing unique pairs by ensureing that fish1 is always the lower of the two IDs, and
   fish2 is always the higher. This enforcement happens in the hooks below. 
@@ -30,7 +32,24 @@ module.exports = function(sequelize, DataTypes) {
         });
       },
       newPair: function(fishId1, fishId2) {
-        
+        var promiseHolder = promiseLib.getPromiseHolder();
+        if (!isNaN(fishId1) && !isNaN(fishId2)) {
+          this.findOrCreate({
+            where: {
+              fish1: fishId1,
+              fish2: fishId2
+            }
+          }).spread(function(pair, created) {
+            if (pair) {
+              promiseHolder.callback(pair);
+            } else {
+              promiseHolder.error("Pair wasn't created!");
+            }
+          });
+        } else {
+          promiseHolder.error("Bad IDs, fish1:"+fishId1+", fish2:"+fishId2);
+        }
+        return promiseLib.getPromise(promiseHolder);
       }
     },
     hooks: {
