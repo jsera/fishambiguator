@@ -16,9 +16,12 @@ module.exports = function(sequelize, DataTypes) {
       },
       newComment: function(params) {
         var promiseHolder = promiseLib.getPromiseHolder();
-        if (!isNaN(params.fish1)) {
+        if (!isNaN(params.fish1) && !isNaN(params.fish2)) {
 
+        } else {
+          promiseHolder.error("Fish IDs aren't valid!");
         }
+        return promiseLib.getPromise(promiseHolder);
       }
     }
   });

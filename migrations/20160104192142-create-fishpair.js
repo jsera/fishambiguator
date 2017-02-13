@@ -9,10 +9,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       fish1: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: "fishes",
+          key: "id"
+        }
       },
       fish2: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: "fishes",
+          key: "id"
+        }
       },
       fishuniqueId: {
         type: Sequelize.INTEGER

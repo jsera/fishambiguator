@@ -25,10 +25,12 @@ module.exports = function(sequelize, DataTypes) {
         // associations can be defined here
         models.fishpair.hasMany(models.fishpair_comment);
         models.fishpair.belongsTo(models.fish, {
-          foreignKey: "fish1"
+          foreignKey: "fish1",
+          foreignKeyConstraint: true
         });
         models.fishpair.belongsTo(models.fish, {
-          foreignKey: "fish2"
+          foreignKey: "fish2",
+          foreignKeyConstraint: true
         });
       },
       newPair: function(fishId1, fishId2) {
@@ -45,6 +47,8 @@ module.exports = function(sequelize, DataTypes) {
             } else {
               promiseHolder.error("Pair wasn't created!");
             }
+          }).catch(function(err) {
+            promiseHolder.error(err);
           });
         } else {
           promiseHolder.error("Bad IDs, fish1:"+fishId1+", fish2:"+fishId2);

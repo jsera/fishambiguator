@@ -38,7 +38,7 @@ describe("Fish pair tests", function() {
 
         db.fish.newFish({
             commonnames: "baz fish",
-            scientificName: "Bazzius fishius"
+            scientificName: "fooius bazzius"
         }).then(function(fish) {
             testFish3 = fish;
             isDone();
@@ -46,7 +46,7 @@ describe("Fish pair tests", function() {
 
         db.fish.newFish({
             commonnames: "banded quux",
-            scientificName: "stripius quuxius"
+            scientificName: "fooius quuxius"
         }).then(function(fish) {
             testFish4 = fish;
             isDone();
@@ -108,15 +108,47 @@ describe("Fish pair tests", function() {
         });
     });
 
+    it("Should give me an error on a nonexistent pair", function(done) {
+        var badID1 = null;
+        var badID2 = null;
+        db.fish.newFish({
+            commonnames: "Gonna dieeee",
+            scientificName: "fooius dieeeee"
+        }).then(function(fish) {
+            badId1 = fish.id;
+            fish.destroy().then(function() {
+                db.fish.newFish({
+                    commonnames: "kill me",
+                    scientificName: "fooius killme"
+                }).then(function(fish) {
+                    badID2 = fish.id;
+                    fish.destroy().then(function() {
+                        db.fishpair.newPair(
+                            badID1,
+                            badID2
+                        ).then(function(pair) {
+                            console.log("Got a pair? ",pair.get());
+                            expect(pair).to.be.null;
+                            done();
+                        }).error(function() {
+                            assert(true, "Used promiseLib to throw an error!");
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
     after(function(done) {
         db.genus.findById(testFish1.genusId).then(function(genus) {
-            testFish1.destroy().then(function() {
-                testFish2.destroy().then(function() {
-                    genus.destroy().then(function() {
-                        testPair.destroy().then(function() {
-                            testFish3.destroy().then(function() {
+            testPair.destroy().then(function() {
+                genus.destroy().then(function() {
+                    testFish1.destroy().then(function() {
+                        testFish2.destroy().then(function() {
+                            testPair2.destroy().then(function() {
                                 testFish4.destroy().then(function() {
-                                    testPair2.destroy().then(function() {
+                                    testFish3.destroy().then(function() {
                                         done();
                                     });
                                 });
