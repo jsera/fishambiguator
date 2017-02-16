@@ -39,8 +39,36 @@ router.get("/:id", function(req, res) {
     }
 });
 
+router.get("/:fish1/:fish2", function(req, res) {
+    db.fishpair.findOne({
+        where: req.body
+    }).then(function(pair) {
+        if (pair) {
+            db.fishpair_comment.findAll({
+                where: {
+                    fishpairId: pair.id
+                }
+            }).then(function(comments) {
+                res.send(comments);
+            }).catch(function(err) {
+                res.send({
+                    error: err
+                });
+            });
+        } else {
+            res.send({
+                error: "Pair not found!"
+            });
+        }
+    }).catch(function(err) {
+        res.send({
+            error: err
+        });
+    });
+});
+
 router.post("/", function(req, res) {
-    
+
 });
 
 module.exports = router;

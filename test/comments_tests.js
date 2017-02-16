@@ -6,6 +6,7 @@ describe("Tests for fishpair comments", function() {
     var testFish2 = null;
     var testPair = null;
     var testComment = null;
+    var testComment2 = null;
 
     before(function(done) {
         db.fish.newFish({
@@ -42,18 +43,35 @@ describe("Tests for fishpair comments", function() {
         });
     });
 
-    it("Is going to test comment deletion", function(done) {
-        testComment.destroy().then(function() {
+    it("Is going to use newComment to create a comment", function(done) {
+        db.fishpair_comment.newComment({
+            fish1: testFish1.id,
+            fish2: testFish2.id,
+            text: "Barf!"
+        }).then(function(comment) {
+            testComment2 = comment;
+            assert(comment.text === "Barf!", "Comment text should be Barf!");
+            assert(comment.fishpairId === testPair.id, "Comment should be for the already created test pair.");
             done();
+        }).error(function(err) {
+            assert(false, err);
         });
     });
 
+    it("Is going to test comment deletion", function(done) {
+        testComment.destroy().then(function() {
+            testComment2.destroy().then(function() {
+                done();
+            });
+        });
+    });
+    // You always have to destroy the pair first because of foreign key constraints
     after(function(done) {
         db.genus.findById(testFish1.genusId).then(function(genus) {
             genus.destroy().then(function() {
-                testFish1.destroy().then(function() {
+                testPair.destroy().then(function() {
                     testFish2.destroy().then(function() {
-                        testPair.destroy().then(function() {
+                        testFish1.destroy().then(function() {
                             done();
                         });
                     });
