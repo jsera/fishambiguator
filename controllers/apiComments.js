@@ -40,8 +40,9 @@ router.get("/:id", function(req, res) {
 });
 
 router.get("/:fish1/:fish2", function(req, res) {
+    console.log("WTF????", req.params);
     db.fishpair.findOne({
-        where: req.body
+        where: req.params
     }).then(function(pair) {
         if (pair) {
             db.fishpair_comment.findAll({
