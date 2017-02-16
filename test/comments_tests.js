@@ -7,6 +7,7 @@ describe("Tests for fishpair comments", function() {
     var testPair = null;
     var testComment = null;
     var testComment2 = null;
+    var testUser = null;
 
     before(function(done) {
         db.fish.newFish({
@@ -26,7 +27,12 @@ describe("Tests for fishpair comments", function() {
                     fish2: testFish2.id
                 }).then(function(pair) {
                     testPair = pair;
-                    done();
+                    db.user.create({
+                        displayname: "Mr. foo"
+                    }).then(function(user) {
+                        testUser = user;
+                        done();
+                    });
                 });
             });
         });
@@ -47,11 +53,13 @@ describe("Tests for fishpair comments", function() {
         db.fishpair_comment.newComment({
             fish1: testFish1.id,
             fish2: testFish2.id,
+            userId: testUser.id,
             text: "Barf!"
         }).then(function(comment) {
             testComment2 = comment;
             assert(comment.text === "Barf!", "Comment text should be Barf!");
             assert(comment.fishpairId === testPair.id, "Comment should be for the already created test pair.");
+            assert(comment.userId === testUser.id, "Comment should have been written by Mr. Foo");
             done();
         }).error(function(err) {
             assert(false, err);
@@ -72,7 +80,9 @@ describe("Tests for fishpair comments", function() {
                 testPair.destroy().then(function() {
                     testFish2.destroy().then(function() {
                         testFish1.destroy().then(function() {
-                            done();
+                            testUser.destroy().then(function() {
+                                done();
+                            });
                         });
                     });
                 });

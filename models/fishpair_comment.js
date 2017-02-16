@@ -18,10 +18,11 @@ module.exports = function(sequelize, DataTypes) {
       newComment: function(params) {
         var promiseHolder = promiseLib.getPromiseHolder();
         var scope = this;
-        if (!isNaN(params.fish1) && !isNaN(params.fish2)) {
+        if (!isNaN(params.fish1) && !isNaN(params.fish2) && !isNaN(params.userId)) {
           Pair.newPair(params.fish1, params.fish2).then(function(pair) {
             scope.create({
               fishpairId: pair.id,
+              userId: params.userId,
               text: params.text
             }).then(function(comment, created) {
               promiseHolder.callback(comment);
@@ -30,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
             promiseHolder.error(err);
           });
         } else {
-          promiseHolder.error("Fish IDs aren't valid!");
+          promiseHolder.error("Fish IDs, or user ID isn't valid!");
         }
         return promiseLib.getPromise(promiseHolder);
       }

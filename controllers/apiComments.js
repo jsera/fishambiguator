@@ -48,7 +48,8 @@ router.get("/:fish1/:fish2", function(req, res) {
             db.fishpair_comment.findAll({
                 where: {
                     fishpairId: pair.id
-                }
+                },
+                include: [db.user]
             }).then(function(comments) {
                 res.send(comments);
             }).catch(function(err) {
